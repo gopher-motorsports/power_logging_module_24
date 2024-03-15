@@ -9,7 +9,7 @@
 #define INC_PLM_ERROR_H_
 
 #include <stdint.h>
-#include "stm32f767xx.h"
+//#include "stm32f767xx.h"
 
 #define ERR_HARDFAULT_BLINKS 10 // # times to blink in hardfault handler
 #define ERR_BLINK_PERIOD 200 // ms between individual blinks
