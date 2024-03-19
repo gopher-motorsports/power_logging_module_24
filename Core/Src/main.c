@@ -24,7 +24,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include "plm.h"
+#include "adc_lib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,11 +55,20 @@ CAN_HandleTypeDef hcan2;
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
 
+RTC_HandleTypeDef hrtc;
+
 SD_HandleTypeDef hsd;
 
 UART_HandleTypeDef huart4;
 
 osThreadId defaultTaskHandle;
+osThreadId store_dataHandle;
+osThreadId service_canHandle;
+osThreadId transmit_dataHandle;
+osThreadId heartbeatHandle;
+osThreadId simulate_dataHandle;
+osThreadId collect_dataHandle;
+osThreadId monitor_currentHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -74,10 +85,31 @@ static void MX_I2C1_Init(void);
 static void MX_SDIO_SD_Init(void);
 static void MX_UART4_Init(void);
 static void MX_I2C2_Init(void);
+static void MX_RTC_Init(void);
 void StartDefaultTask(void const * argument);
+void plm_store_data(void const * argument);
+void plm_service_can(void const * argument);
+void plm_transmit_data(void const * argument);
+void plm_heartbeat(void const * argument);
+void plm_simulate_data(void const * argument);
+void plm_collect_data(void const * argument);
+void plm_monitor_current(void const * argument);
 
 /* USER CODE BEGIN PFP */
+// redirect printf to USART (STLink Virtual COM)
+// NOTE: output gets flushed at newline \n
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
 
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -123,8 +155,9 @@ int main(void)
   MX_UART4_Init();
   MX_FATFS_Init();
   MX_I2C2_Init();
+  MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-
+  plm_init();
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -147,6 +180,34 @@ int main(void)
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* definition and creation of store_data */
+  osThreadDef(store_data, plm_store_data, osPriorityIdle, 0, 128);
+  store_dataHandle = osThreadCreate(osThread(store_data), NULL);
+
+  /* definition and creation of service_can */
+  osThreadDef(service_can, plm_service_can, osPriorityIdle, 0, 128);
+  service_canHandle = osThreadCreate(osThread(service_can), NULL);
+
+  /* definition and creation of transmit_data */
+  osThreadDef(transmit_data, plm_transmit_data, osPriorityIdle, 0, 128);
+  transmit_dataHandle = osThreadCreate(osThread(transmit_data), NULL);
+
+  /* definition and creation of heartbeat */
+  osThreadDef(heartbeat, plm_heartbeat, osPriorityIdle, 0, 128);
+  heartbeatHandle = osThreadCreate(osThread(heartbeat), NULL);
+
+  /* definition and creation of simulate_data */
+  osThreadDef(simulate_data, plm_simulate_data, osPriorityIdle, 0, 128);
+  simulate_dataHandle = osThreadCreate(osThread(simulate_data), NULL);
+
+  /* definition and creation of collect_data */
+  osThreadDef(collect_data, plm_collect_data, osPriorityIdle, 0, 128);
+  collect_dataHandle = osThreadCreate(osThread(collect_data), NULL);
+
+  /* definition and creation of monitor_current */
+  osThreadDef(monitor_current, plm_monitor_current, osPriorityIdle, 0, 128);
+  monitor_currentHandle = osThreadCreate(osThread(monitor_current), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -184,9 +245,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
+  RCC_OscInitStruct.LSEState = RCC_LSE_BYPASS;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 16;
@@ -513,6 +576,63 @@ static void MX_I2C2_Init(void)
 }
 
 /**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+	// part of the bad solution
+	RTC_TimeTypeDef old_time = {0};
+	RTC_DateTypeDef old_date = {0};
+
+	// this is a dumb solution to the problem of the auto-gen code resetting the time and
+	// date on every MCU reset
+
+	// get the time and date stored before reseting
+	HAL_RTC_GetTime(&hrtc, &old_time, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &old_date, RTC_FORMAT_BIN);
+  /* USER CODE END RTC_Init 0 */
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+
+  // part of the bad solution
+
+  // put the old time and date back to what it used to be
+  if (HAL_RTC_SetTime(&hrtc, &old_time, RTC_FORMAT_BIN) != HAL_OK)
+  {
+	Error_Handler();
+  }
+  if (HAL_RTC_SetDate(&hrtc, &old_date, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* USER CODE END RTC_Init 2 */
+
+}
+
+/**
   * @brief SDIO Initialization Function
   * @param None
   * @retval None
@@ -659,6 +779,132 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_plm_store_data */
+/**
+* @brief Function implementing the store_data thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_store_data */
+void plm_store_data(void const * argument)
+{
+  /* USER CODE BEGIN plm_store_data */
+  /* Infinite loop */
+  for(;;)
+  {
+    plm_store_data();
+  }
+  /* USER CODE END plm_store_data */
+}
+
+/* USER CODE BEGIN Header_plm_service_can */
+/**
+* @brief Function implementing the service_can thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_service_can */
+void plm_service_can(void const * argument)
+{
+  /* USER CODE BEGIN plm_service_can */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_service_can */
+}
+
+/* USER CODE BEGIN Header_plm_transmit_data */
+/**
+* @brief Function implementing the transmit_data thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_transmit_data */
+void plm_transmit_data(void const * argument)
+{
+  /* USER CODE BEGIN plm_transmit_data */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_transmit_data */
+}
+
+/* USER CODE BEGIN Header_plm_heartbeat */
+/**
+* @brief Function implementing the heartbeat thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_heartbeat */
+void plm_heartbeat(void const * argument)
+{
+  /* USER CODE BEGIN plm_heartbeat */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_heartbeat */
+}
+
+/* USER CODE BEGIN Header_plm_simulate_data */
+/**
+* @brief Function implementing the simulate_data thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_simulate_data */
+void plm_simulate_data(void const * argument)
+{
+  /* USER CODE BEGIN plm_simulate_data */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_simulate_data */
+}
+
+/* USER CODE BEGIN Header_plm_collect_data */
+/**
+* @brief Function implementing the collect_data thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_collect_data */
+void plm_collect_data(void const * argument)
+{
+  /* USER CODE BEGIN plm_collect_data */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_collect_data */
+}
+
+/* USER CODE BEGIN Header_plm_monitor_current */
+/**
+* @brief Function implementing the monitor_current thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_monitor_current */
+void plm_monitor_current(void const * argument)
+{
+  /* USER CODE BEGIN plm_monitor_current */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END plm_monitor_current */
 }
 
 /**
