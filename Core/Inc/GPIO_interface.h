@@ -11,23 +11,41 @@
 /** @defgroup GPIO_pins_define GPIO pins define
   * @{
   */
-#define GPIO_PIN_0                 ((uint16_t)0x0001)  /* Pin 0 selected    */
-#define GPIO_PIN_1                 ((uint16_t)0x0002)  /* Pin 1 selected    */
-#define GPIO_PIN_2                 ((uint16_t)0x0004)  /* Pin 2 selected    */
-#define GPIO_PIN_3                 ((uint16_t)0x0008)  /* Pin 3 selected    */
-#define GPIO_PIN_4                 ((uint16_t)0x0010)  /* Pin 4 selected    */
-#define GPIO_PIN_5                 ((uint16_t)0x0020)  /* Pin 5 selected    */
-#define GPIO_PIN_6                 ((uint16_t)0x0040)  /* Pin 6 selected    */
-#define GPIO_PIN_7                 ((uint16_t)0x0080)  /* Pin 7 selected    */
-#define GPIO_PIN_8                 ((uint16_t)0x0100)  /* Pin 8 selected    */
-#define GPIO_PIN_9                 ((uint16_t)0x0200)  /* Pin 9 selected    */
-#define GPIO_PIN_10                ((uint16_t)0x0400)  /* Pin 10 selected   */
-#define GPIO_PIN_11                ((uint16_t)0x0800)  /* Pin 11 selected   */
-#define GPIO_PIN_12                ((uint16_t)0x1000)  /* Pin 12 selected   */
-#define GPIO_PIN_13                ((uint16_t)0x2000)  /* Pin 13 selected   */
-#define GPIO_PIN_14                ((uint16_t)0x4000)  /* Pin 14 selected   */
-#define GPIO_PIN_15                ((uint16_t)0x8000)  /* Pin 15 selected   */
-#define GPIO_PIN_All               ((uint16_t)0xFFFF)  /* All pins selected */
+#define NUM_OF_CHANNELS 6
+#define MIN_5V_VOLTAGE_V 2.0f
+#define MIN_VBAT_VOLTAGE_V 2.0f
 
-#define GPIO_PIN_MASK              0x0000FFFFU /* PIN mask for assert test */
+// cooling control stuff
+#define WHEEL_SPEED_FAN_OFF_THRESH_mph 20.0f
+#define TRUST_VALUE_TIME_DELTA_ms 200
+
+typedef struct {
+    FLOAT_CAN_STRUCT* parameter;
+    GPIO_TypeDef* enable_switch_port;
+    uint16_t enable_switch_pin;
+    uint8_t enabled;
+    float amp_max;
+    float ampsec_max;
+    float ampsec_sum;
+    uint32_t trip_time;
+    uint32_t reset_delay_ms;
+    uint32_t last_update;
+} PLM_POWER_CHANNEL_EXTENSION;
+
+typedef struct  {
+		uint8_t inv_pin_0 = 0b00000001;
+		uint8_t inv_pin_1 = 0b00000010;
+		uint8_t inv_pin_2 = 0b00000100;
+		uint8_t inv_pin_3 = 0b00001000;
+		uint8_t inv_pin_4 = 0b00010000;
+		uint8_t inv_pin_5 = 0b00100000;
+		uint8_t inv_pin_6 = 0b01000000;
+} GPIO_data_value;
+
+extern PLM_POWER_CHANNEL_EXTENSION* POWER_CHANNELS[NUM_OF_CHANNELS];
+
+void plm_power_update_channel(PLM_POWER_CHANNEL_EXTENSION* channel);
+void plm_cooling_control(void);
+
+#endif /* INC_PLM_POWER_H_ */
 

@@ -20,6 +20,7 @@
 #include "plm_data.h"
 #include "plm_power.h"
 #include "plm_misc.h"
+#include "plm_GPIO_Extension.c"
 
 #include "plm_GPIO_extension.c"
 
@@ -309,9 +310,14 @@ void plm_monitor_current(void) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);
 
+
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
             // channel has reached Amp*sec threshold, open switch
-            HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
+            if (i >= 7){
+            	GPIO_extension_inversion(channel->invert);
+            } else {
+            	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
+            }
             channel->trip_time = HAL_GetTick();
             channel->enabled = 0;
         } else if (!channel->enabled) {
@@ -319,7 +325,11 @@ void plm_monitor_current(void) {
             uint32_t ms_since_trip = HAL_GetTick() - channel->trip_time;
             if (ms_since_trip >= channel->reset_delay_ms) {
                 channel->ampsec_sum = 0;
-                HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+                if(i >= 7){
+                	GPIO_extension_inversion(channel->invert);
+                } else {
+                	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+                }
                 channel->enabled = 1;
             }
         }

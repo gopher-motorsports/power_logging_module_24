@@ -17,6 +17,14 @@
  *      Author: joshwashburn
  */
 
+#include "GPIO_interface.h"
+#include "main.c"
+
+void GPIO_extension_inversion(PLM_POWER_CHANNEL* value){
+	uint8_t *pData = &value;
+	HAL_I2C_Master_Transmit(hi2c2, 0b0010000, *pData, 0b10, 0x64); // if there is an error, check the timing value.
+}
+
 
 
 void GPIO_extension_toggle(int pin_number) {
@@ -42,7 +50,6 @@ void GPIO_extension_toggle(int pin_number) {
 		//I2C command to toggle pin 6
 	}
 }
-
 
 void GPIO_extension_write(int pin_number, bool state) {
 	if (pin_number == 0) {

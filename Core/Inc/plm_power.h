@@ -24,6 +24,7 @@ typedef struct {
     FLOAT_CAN_STRUCT* parameter;
     GPIO_TypeDef* enable_switch_port;
     uint16_t enable_switch_pin;
+    uint8_t invert;
     uint8_t enabled;
     float amp_max;
     float ampsec_max;
