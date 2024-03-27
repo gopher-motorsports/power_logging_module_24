@@ -86,7 +86,26 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
+	 // turn off heartbeat LED
+	 //HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_RESET);
 
+	 // reset timer
+	 TIM9->CNT = 0;
+
+	 // blink hardfault LED
+	 for (uint32_t i = 0; i < ERR_HARDFAULT_BLINKS; i++) {
+	     HAL_GPIO_TogglePin(LED_FAULT_GPIO_Port, LED_FAULT_Pin);
+	     // wait between blinks
+	     for (uint32_t j = 0; j < ERR_BLINK_PERIOD; j++) {
+	         // wait 1ms
+	         while (TIM9->CNT <= htim9.Init.Period/2) {}
+	         while (TIM9->CNT > htim9.Init.Period/2) {}
+	     }
+  }
+  HAL_GPIO_WritePin(LED_FAULT_GPIO_Port, LED_FAULT_Pin, GPIO_PIN_RESET);
+
+  // restart
+  NVIC_SystemReset();
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {

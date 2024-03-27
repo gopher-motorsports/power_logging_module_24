@@ -97,8 +97,8 @@ void Error_Handler(void);
 #define TVE5_GPIO_Port GPIOC
 #define TVE6_Pin GPIO_PIN_8
 #define TVE6_GPIO_Port GPIOA
-#define LED2_Pin GPIO_PIN_10
-#define LED2_GPIO_Port GPIOA
+#define LED_FAULT_Pin GPIO_PIN_10
+#define LED_FAULT_GPIO_Port GPIOA
 #define SD_SW_CD_Pin GPIO_PIN_15
 #define SD_SW_CD_GPIO_Port GPIOA
 #define MCU_EXT_EN1_Pin GPIO_PIN_4

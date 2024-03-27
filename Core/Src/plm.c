@@ -22,8 +22,6 @@
 #include "plm_misc.h"
 #include "plm_GPIO_Extension.c"
 
-#include "plm_GPIO_extension.c"
-
 // we might need to turn this up for launch control
 #define CAN_MESSAGE_FORWARD_INTERVAL_ms 50
 
@@ -80,6 +78,9 @@ void plm_init(void) {
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+        if (i > 7) {
+        	GPIO_Extension_Write(channel->external_GPIO_on);
+        }
     }
 
     // we dont want to send parameters
@@ -98,7 +99,7 @@ void plm_heartbeat(void) {
 #ifdef PLM_DEV_MODE
         printf("PLM (%lu): ⚡\n", tick);
 #endif
-        GPIO_extension_toggle(0);
+        GPIO_Extension_toggle(0);
         last_blink = tick;
     }
 
@@ -226,7 +227,7 @@ void plm_store_data(void) {
     static uint8_t fs_ready = 0;
 
     // check if device is connected and ready to interact via USB
-    uint8_t usb_connected = hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED;
+    uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
 
     // prevent USB access and FatFs interaction at the same time
     // USB callbacks are in USB_DEVICE/App/usbd_storage_if.c
@@ -237,6 +238,7 @@ void plm_store_data(void) {
 #endif
         plm_sd_deinit();
         fs_ready = 0;
+        HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
     }
 
     if (!usb_connected) {
@@ -264,7 +266,7 @@ void plm_store_data(void) {
                     } else {
                         // successful write
                         SD_DB.tx_cplt = 1;
-                        GPIO_extension_toggle(1);
+                        GPIO_Extension_toggle(1);
                     }
                 } else SD_DB.tx_cplt = 1;
             }
@@ -295,6 +297,7 @@ void plm_simulate_data(void) {
     if (res != PLM_OK) plm_err_set(PLM_ERR_SIM);
 
     osDelay(PLM_TASK_DELAY_SIM);
+
 }
 
 void plm_monitor_current(void) {
@@ -314,23 +317,32 @@ void plm_monitor_current(void) {
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
             // channel has reached Amp*sec threshold, open switch
             if (i >= 7){
-            	GPIO_extension_inversion(channel->invert);
+            	GPIO_extension_write(channel->external_GPIO_off);
             } else {
             	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
             }
             channel->trip_time = HAL_GetTick();
             channel->enabled = 0;
+            channel->overcurrent_count++;
+            GPIO_extension_overcurrent_LED(1);
         } else if (!channel->enabled) {
             // check if it's time to re-enable this channel
             uint32_t ms_since_trip = HAL_GetTick() - channel->trip_time;
-            if (ms_since_trip >= channel->reset_delay_ms) {
+            if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
                 if(i >= 7){
-                	GPIO_extension_inversion(channel->invert);
+                	GPIO_extension_write(channel->external_GPIO_on);
                 } else {
                 	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
                 }
                 channel->enabled = 1;
+                GPIO_extension_overcurrent_LED(0);
+            } else if (channel->overcurrent_count > channel->max_overcurrent) {
+#ifdef PLM_DEV_MODE
+            	printf("MAX OVERCURRENT COUNT REACHED ON CHANNEL  " + channel + " THIS CHANNEL IS NOW PERMENANTLY DISABLED!!!")
+#endif
+				GPIO_extension_overcurrent_LED(1);
+
             }
         }
     }

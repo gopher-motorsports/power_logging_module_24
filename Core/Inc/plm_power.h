@@ -32,7 +32,14 @@ typedef struct {
     uint32_t trip_time;
     uint32_t reset_delay_ms;
     uint32_t last_update;
+    uint8_t overcurrent_count;
+    uint8_t external_GPIO_on;
+    uint8_t external_GPIO_off;
+    uint8_t max_overcurrent_count;
 } PLM_POWER_CHANNEL;
+
+uint8_t current_external_GPIO = 0b00000000;
+uint8_t overcurrent_count_exceeded_event = 0;
 
 extern PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS];
 

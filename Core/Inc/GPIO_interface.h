@@ -33,13 +33,20 @@ typedef struct {
 } PLM_POWER_CHANNEL_EXTENSION;
 
 typedef struct  {
-		uint8_t inv_pin_0 = 0b00000001;
-		uint8_t inv_pin_1 = 0b00000010;
-		uint8_t inv_pin_2 = 0b00000100;
-		uint8_t inv_pin_3 = 0b00001000;
-		uint8_t inv_pin_4 = 0b00010000;
-		uint8_t inv_pin_5 = 0b00100000;
-		uint8_t inv_pin_6 = 0b01000000;
+		uint8_t pin_0_on = 0b00000001;
+		uint8_t pin_0_off = 0b11111110;
+		uint8_t pin_1_on = 0b00000010;
+		uint8_t pin_1_off = 0b11111101;
+		uint8_t pin_2_on = 0b00000100;
+		uint8_t pin_2_off = 0b11111011;
+		uint8_t pin_3_on = 0b00001000;
+		uint8_t pin_3_off = 0b11110111;
+		uint8_t pin_4_on = 0b00010000;
+		uint8_t pin_4_off = 0b11101111;
+		uint8_t pin_5_on = 0b00100000;
+		uint8_t pin_5_off = 0b11011111;
+		uint8_t pin_6_on = 0b01000000;
+		uint8_t pin_6_off = 0b10111111;
 } GPIO_data_value;
 
 extern PLM_POWER_CHANNEL_EXTENSION* POWER_CHANNELS[NUM_OF_CHANNELS];

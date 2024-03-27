@@ -87,13 +87,13 @@ static void MX_UART4_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_RTC_Init(void);
 void StartDefaultTask(void const * argument);
-void plm_store_data(void const * argument);
-void plm_service_can(void const * argument);
-void plm_transmit_data(void const * argument);
-void plm_heartbeat(void const * argument);
-void plm_simulate_data(void const * argument);
-void plm_collect_data(void const * argument);
-void plm_monitor_current(void const * argument);
+void plm_task_store_data(void const * argument);
+void plm_task_service_can(void const * argument);
+void plm_task_transmit_data(void const * argument);
+void plm_task_heartbeat(void const * argument);
+void plm_task_simulate_data(void const * argument);
+void plm_task_collect_data(void const * argument);
+void plm_task_monitor_current(void const * argument);
 
 /* USER CODE BEGIN PFP */
 // redirect printf to USART (STLink Virtual COM)
@@ -182,31 +182,31 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of store_data */
-  osThreadDef(store_data, plm_store_data, osPriorityIdle, 0, 128);
+  osThreadDef(store_data, plm_task_store_data, osPriorityIdle, 0, 128);
   store_dataHandle = osThreadCreate(osThread(store_data), NULL);
 
   /* definition and creation of service_can */
-  osThreadDef(service_can, plm_service_can, osPriorityIdle, 0, 128);
+  osThreadDef(service_can, plm_task_service_can, osPriorityIdle, 0, 128);
   service_canHandle = osThreadCreate(osThread(service_can), NULL);
 
   /* definition and creation of transmit_data */
-  osThreadDef(transmit_data, plm_transmit_data, osPriorityIdle, 0, 128);
+  osThreadDef(transmit_data, plm_task_transmit_data, osPriorityIdle, 0, 128);
   transmit_dataHandle = osThreadCreate(osThread(transmit_data), NULL);
 
   /* definition and creation of heartbeat */
-  osThreadDef(heartbeat, plm_heartbeat, osPriorityIdle, 0, 128);
+  osThreadDef(heartbeat, plm_task_heartbeat, osPriorityIdle, 0, 128);
   heartbeatHandle = osThreadCreate(osThread(heartbeat), NULL);
 
   /* definition and creation of simulate_data */
-  osThreadDef(simulate_data, plm_simulate_data, osPriorityIdle, 0, 128);
+  osThreadDef(simulate_data, plm_task_simulate_data, osPriorityIdle, 0, 128);
   simulate_dataHandle = osThreadCreate(osThread(simulate_data), NULL);
 
   /* definition and creation of collect_data */
-  osThreadDef(collect_data, plm_collect_data, osPriorityIdle, 0, 128);
+  osThreadDef(collect_data, plm_task_collect_data, osPriorityIdle, 0, 128);
   collect_dataHandle = osThreadCreate(osThread(collect_data), NULL);
 
   /* definition and creation of monitor_current */
-  osThreadDef(monitor_current, plm_monitor_current, osPriorityIdle, 0, 128);
+  osThreadDef(monitor_current, plm_task_monitor_current, osPriorityIdle, 0, 128);
   monitor_currentHandle = osThreadCreate(osThread(monitor_current), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -718,7 +718,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, MCU_EXT_EN2_Pin|TVEN5_Pin|MCU_EXT_EN1_Pin|MEDIA_nRST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, TVE6_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, TVE6_Pin|LED_FAULT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : HS_VBUS_SNS_Pin */
   GPIO_InitStruct.Pin = HS_VBUS_SNS_Pin;
@@ -740,8 +740,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : TVE6_Pin LED2_Pin */
-  GPIO_InitStruct.Pin = TVE6_Pin|LED2_Pin;
+  /*Configure GPIO pins : TVE6_Pin LED_FAULT_Pin */
+  GPIO_InitStruct.Pin = TVE6_Pin|LED_FAULT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -781,130 +781,130 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_plm_store_data */
+/* USER CODE BEGIN Header_plm_task_store_data */
 /**
 * @brief Function implementing the store_data thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_store_data */
-void plm_store_data(void const * argument)
+/* USER CODE END Header_plm_task_store_data */
+void plm_task_store_data(void const * argument)
 {
-  /* USER CODE BEGIN plm_store_data */
+  /* USER CODE BEGIN plm_task_store_data */
   /* Infinite loop */
   for(;;)
   {
-    plm_store_data();
+    osDelay(1);
   }
-  /* USER CODE END plm_store_data */
+  /* USER CODE END plm_task_store_data */
 }
 
-/* USER CODE BEGIN Header_plm_service_can */
+/* USER CODE BEGIN Header_plm_task_service_can */
 /**
 * @brief Function implementing the service_can thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_service_can */
-void plm_service_can(void const * argument)
+/* USER CODE END Header_plm_task_service_can */
+void plm_task_service_can(void const * argument)
 {
-  /* USER CODE BEGIN plm_service_can */
+  /* USER CODE BEGIN plm_task_service_can */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_service_can */
+  /* USER CODE END plm_task_service_can */
 }
 
-/* USER CODE BEGIN Header_plm_transmit_data */
+/* USER CODE BEGIN Header_plm_task_transmit_data */
 /**
 * @brief Function implementing the transmit_data thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_transmit_data */
-void plm_transmit_data(void const * argument)
+/* USER CODE END Header_plm_task_transmit_data */
+void plm_task_transmit_data(void const * argument)
 {
-  /* USER CODE BEGIN plm_transmit_data */
+  /* USER CODE BEGIN plm_task_transmit_data */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_transmit_data */
+  /* USER CODE END plm_task_transmit_data */
 }
 
-/* USER CODE BEGIN Header_plm_heartbeat */
+/* USER CODE BEGIN Header_plm_task_heartbeat */
 /**
 * @brief Function implementing the heartbeat thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_heartbeat */
-void plm_heartbeat(void const * argument)
+/* USER CODE END Header_plm_task_heartbeat */
+void plm_task_heartbeat(void const * argument)
 {
-  /* USER CODE BEGIN plm_heartbeat */
+  /* USER CODE BEGIN plm_task_heartbeat */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_heartbeat */
+  /* USER CODE END plm_task_heartbeat */
 }
 
-/* USER CODE BEGIN Header_plm_simulate_data */
+/* USER CODE BEGIN Header_plm_task_simulate_data */
 /**
 * @brief Function implementing the simulate_data thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_simulate_data */
-void plm_simulate_data(void const * argument)
+/* USER CODE END Header_plm_task_simulate_data */
+void plm_task_simulate_data(void const * argument)
 {
-  /* USER CODE BEGIN plm_simulate_data */
+  /* USER CODE BEGIN plm_task_simulate_data */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_simulate_data */
+  /* USER CODE END plm_task_simulate_data */
 }
 
-/* USER CODE BEGIN Header_plm_collect_data */
+/* USER CODE BEGIN Header_plm_task_collect_data */
 /**
 * @brief Function implementing the collect_data thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_collect_data */
-void plm_collect_data(void const * argument)
+/* USER CODE END Header_plm_task_collect_data */
+void plm_task_collect_data(void const * argument)
 {
-  /* USER CODE BEGIN plm_collect_data */
+  /* USER CODE BEGIN plm_task_collect_data */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_collect_data */
+  /* USER CODE END plm_task_collect_data */
 }
 
-/* USER CODE BEGIN Header_plm_monitor_current */
+/* USER CODE BEGIN Header_plm_task_monitor_current */
 /**
 * @brief Function implementing the monitor_current thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_monitor_current */
-void plm_monitor_current(void const * argument)
+/* USER CODE END Header_plm_task_monitor_current */
+void plm_task_monitor_current(void const * argument)
 {
-  /* USER CODE BEGIN plm_monitor_current */
+  /* USER CODE BEGIN plm_task_monitor_current */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END plm_monitor_current */
+  /* USER CODE END plm_task_monitor_current */
 }
 
 /**

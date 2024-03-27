@@ -25,7 +25,9 @@ PLM_POWER_CHANNEL ch_12v_0 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 20A
@@ -44,7 +46,9 @@ PLM_POWER_CHANNEL ch_12v_1 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 20A
@@ -63,7 +67,9 @@ PLM_POWER_CHANNEL ch_12v_2 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 10A
@@ -82,7 +88,9 @@ PLM_POWER_CHANNEL ch_12v_3 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 10A
@@ -101,7 +109,9 @@ PLM_POWER_CHANNEL ch_12v_4 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 10A
@@ -120,7 +130,9 @@ PLM_POWER_CHANNEL ch_12v_5 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 10A
@@ -139,7 +151,9 @@ PLM_POWER_CHANNEL ch_12v_6 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5
 };
 
 // CAN SUPPORT: 2A
@@ -158,7 +172,11 @@ PLM_POWER_CHANNEL ch_5v_0 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5,
+	.external_GPIO_on = current_GPIO_state|0b00001000,
+	.external_GPIO_off = current_GPIO_state&0b11110111
 };
 
 // CAN SUPPORT: 2A
@@ -177,7 +195,11 @@ PLM_POWER_CHANNEL ch_5v_1 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5,
+	.external_GPIO_on = current_GPIO_state|0b00010000,
+	.external_GPIO_off = current_GPIO_state&0b11101111
 };
 
 // CAN SUPPORT: 2A
@@ -196,7 +218,11 @@ PLM_POWER_CHANNEL ch_5v_2 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5,
+	.external_GPIO_on = current_GPIO_state|0b00100000,
+	.external_GPIO_off = current_GPIO_state&0b11011111
 };
 
 // CAN SUPPORT: 2A
@@ -215,7 +241,11 @@ PLM_POWER_CHANNEL ch_5v_3 = {
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
-    .last_update = 0
+    .last_update = 0,
+	.overcurrent_count = 0,
+	.max_overcurrent_count = 5,
+	.external_GPIO_on = current_GPIO_state|0b01000000,
+	.external_GPIO_off = current_GPIO_state&0b10111111
 };
 
 PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS] = {
