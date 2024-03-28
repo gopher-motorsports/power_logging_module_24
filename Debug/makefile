@@ -22,8 +22,10 @@ RM := rm -rf
 -include FATFS/Target/subdir.mk
 -include FATFS/App/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
+-include Core/gophercan-lib/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
+-include Core/Gopher_Sense/lib/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -72,8 +74,8 @@ all: main-build
 main-build: power_logging_module_24.elf secondary-outputs
 
 # Tool invocations
-power_logging_module_24.elf power_logging_module_24.map: $(OBJS) $(USER_OBJS) /Users/joshwashburn/STM32CubeIDE/power_logging_module_24/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "power_logging_module_24.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/joshwashburn/STM32CubeIDE/power_logging_module_24/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="power_logging_module_24.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+power_logging_module_24.elf power_logging_module_24.map: $(OBJS) $(USER_OBJS) C:\Users\Owner\Motorsport\power_logging_module_24\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "power_logging_module_24.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Owner\Motorsport\power_logging_module_24\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="power_logging_module_24.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
