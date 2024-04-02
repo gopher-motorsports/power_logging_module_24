@@ -18,7 +18,6 @@
  *      Author: joshwashburn
  */
 
-#include <plm_GPIO_Extension.h>
 #include "plm_power.h"
 #include "plm_power.c"
 

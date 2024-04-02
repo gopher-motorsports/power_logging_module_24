@@ -8,7 +8,6 @@
 #ifndef INC_PLM_DATA_H_
 #define INC_PLM_DATA_H_
 
-#include "plm_error.h"
 #include "GopherCAN.h"
 
 // packet control bytes

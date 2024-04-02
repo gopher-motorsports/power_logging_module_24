@@ -9,7 +9,6 @@
 #define INC_PLM_SD_H_
 
 #include <stdint.h>
-#include "plm_error.h"
 
 PLM_RES plm_sd_init(void);
 void plm_sd_deinit(void);

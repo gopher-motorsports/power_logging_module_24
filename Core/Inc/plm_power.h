@@ -9,7 +9,6 @@
 #define INC_PLM_POWER_H_
 
 #include "main.h"
-#include "plm_error.h"
 #include "GopherCAN.h"
 
 #define NUM_OF_CHANNELS 11

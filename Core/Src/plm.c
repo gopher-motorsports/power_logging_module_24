@@ -14,7 +14,6 @@
 #include "gopher_sense.h"
 #include "usb_device.h"
 #include "fatfs.h"
-#include "plm_error.h"
 #include "plm_sd.h"
 #include "plm_sim.h"
 #include "plm_data.h"
