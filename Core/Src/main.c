@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "plm.h"
 #include "adc_lib.h"
+#include "plm_error.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,8 +107,8 @@ void plm_task_monitor_current(void const * argument);
 
 PUTCHAR_PROTOTYPE
 {
-  HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
-  HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart4, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart4, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
   return ch;
 }
 /* USER CODE END PFP */
@@ -123,6 +124,7 @@ PUTCHAR_PROTOTYPE
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -217,6 +219,7 @@ int main(void)
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -711,13 +714,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, MCU_EXT_EN0_Pin|TVE4_Pin|TVE5_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, MCU_EXT_EN0_Pin|EN_12V_4_Pin|EN_12V_5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, MCU_EXT_EN2_Pin|TVEN5_Pin|MCU_EXT_EN1_Pin|MEDIA_nRST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, MCU_EXT_EN2_Pin|EN_12V_3_Pin|MCU_EXT_EN1_Pin|MEDIA_nRST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, TVE6_Pin|LED_FAULT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, EN_12V_6_Pin|LED_FAULT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : HS_VBUS_SNS_Pin */
   GPIO_InitStruct.Pin = HS_VBUS_SNS_Pin;
@@ -725,22 +728,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(HS_VBUS_SNS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : MCU_EXT_EN0_Pin TVE4_Pin TVE5_Pin */
-  GPIO_InitStruct.Pin = MCU_EXT_EN0_Pin|TVE4_Pin|TVE5_Pin;
+  /*Configure GPIO pins : MCU_EXT_EN0_Pin EN_12V_4_Pin EN_12V_5_Pin */
+  GPIO_InitStruct.Pin = MCU_EXT_EN0_Pin|EN_12V_4_Pin|EN_12V_5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : MCU_EXT_EN2_Pin TVEN5_Pin MCU_EXT_EN1_Pin MEDIA_nRST_Pin */
-  GPIO_InitStruct.Pin = MCU_EXT_EN2_Pin|TVEN5_Pin|MCU_EXT_EN1_Pin|MEDIA_nRST_Pin;
+  /*Configure GPIO pins : MCU_EXT_EN2_Pin EN_12V_3_Pin MCU_EXT_EN1_Pin MEDIA_nRST_Pin */
+  GPIO_InitStruct.Pin = MCU_EXT_EN2_Pin|EN_12V_3_Pin|MCU_EXT_EN1_Pin|MEDIA_nRST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : TVE6_Pin LED_FAULT_Pin */
-  GPIO_InitStruct.Pin = TVE6_Pin|LED_FAULT_Pin;
+  /*Configure GPIO pins : EN_12V_6_Pin LED_FAULT_Pin */
+  GPIO_InitStruct.Pin = EN_12V_6_Pin|LED_FAULT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

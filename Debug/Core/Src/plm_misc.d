@@ -60,7 +60,8 @@ Core/Src/plm_misc.o: ../Core/Src/plm_misc.c ../Core/Inc/plm_misc.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
- ../Core/Inc/GopherCAN_config.h
+ ../Core/Inc/GopherCAN_config.h ../Core/Inc/plm_error.h \
+ ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f446xx.h
 ../Core/Inc/plm_misc.h:
 ../Core/Inc/plm.h:
 ../Core/Inc/plm_data.h:
@@ -126,3 +127,5 @@ C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN_network.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
 ../Core/Inc/GopherCAN_config.h:
+../Core/Inc/plm_error.h:
+../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f446xx.h:

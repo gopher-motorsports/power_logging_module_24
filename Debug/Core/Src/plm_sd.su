@@ -1,0 +1,3 @@
+../Core/Src/plm_sd.c:18:9:plm_sd_init	104	static
+../Core/Src/plm_sd.c:55:6:plm_sd_deinit	8	static
+../Core/Src/plm_sd.c:65:9:plm_sd_write	24	static

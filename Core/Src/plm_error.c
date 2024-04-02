@@ -15,7 +15,7 @@
 // STATUS LED is used for heartbeat blink
 // FAULT LED is controlled in HardFault_Handler
 
-#define NUM_OF_LEDS 6
+#define NUM_OF_LEDS 1
 
 #define ERR_STATUS 0
 #define ERR_FAULT 1
@@ -25,24 +25,24 @@
 #define ERR_OVERCURRENT 5
 
 static GPIO_TypeDef* led_port[NUM_OF_LEDS] = {
-    LED_STATUS_GPIO_Port,
+ //   LED_STATUS_GPIO_Port,
     LED_FAULT_GPIO_Port,
-    LED_MEMORY_GPIO_Port,
-    LED_STORAGE_GPIO_Port,
-    LED_USB_GPIO_Port,
-    LED_OVERCURRENT_GPIO_Port
+ //   LED_MEMORY_GPIO_Port,
+//   LED_STORAGE_GPIO_Port,
+ //   LED_USB_GPIO_Port,
+  //  LED_OVERCURRENT_GPIO_Port
 };
 
 static uint16_t led_pin[NUM_OF_LEDS] = {
-    LED_STATUS_Pin,
+ //   LED_STATUS_Pin,
     LED_FAULT_Pin,
-    LED_MEMORY_Pin,
-    LED_STORAGE_Pin,
-    LED_USB_Pin,
-    LED_OVERCURRENT_Pin
+ //   LED_MEMORY_Pin,
+  //  LED_STORAGE_Pin,
+ //   LED_USB_Pin,
+  //  LED_OVERCURRENT_Pin
 };
 
-static PLM_RES err_state[NUM_OF_LEDS] = {PLM_OK, PLM_OK, PLM_OK, PLM_OK, PLM_OK, PLM_OK};
+static PLM_RES err_state[NUM_OF_LEDS] = {PLM_OK};
 
 void plm_err_set(PLM_RES code) {
 #ifdef PLM_DEV_MODE

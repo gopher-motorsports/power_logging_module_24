@@ -9,6 +9,7 @@
 #define INC_PLM_DATA_H_
 
 #include "GopherCAN.h"
+#include "plm_error.h"
 
 // packet control bytes
 #define START_BYTE 0x7e // start of a packet

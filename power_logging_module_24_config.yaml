@@ -1,5 +1,5 @@
 
-module_name: "power-logging-module-23"
+module_name: "power-logging-module-24"
 use_hw_timer: false # Disable hw timer based DMA update
 
 buckets:
@@ -9,7 +9,7 @@ buckets:
         parameters:
             # these must directly be a variable defined in GopherCAN
             vbatChan0Current_A:
-                ADC: ADC1_IN0
+                ADC: ADC1_IN0 
                 sensor: vbat_channel_current
                 samples_buffered: 10
             vbatChan1Current_A:

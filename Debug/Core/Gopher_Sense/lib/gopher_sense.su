@@ -1,0 +1,17 @@
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:99:20:gsense_init	64	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:202:6:set_all_param_sending	16	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:215:4:lock_param_sending	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:229:4:update_and_queue_param_float	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:253:4:update_and_queue_param_u32	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:276:4:update_and_queue_param_u16	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:299:4:update_and_queue_param_u8	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:322:6:gsense_reset	16	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:361:6:gsense_main_task	16	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:391:13:ADC_sensor_service	8	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:410:13:service_ADC	40	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:453:13:handle_param_sending	16	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:500:13:handle_gsense_led	8	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:558:13:handle_gsense_fatal_error	16	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:570:27:find_parameter_from_GCAN	24	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:590:11:fill_gcan_param_data	32	static
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/gopher_sense.c:681:6:log_complete	16	static

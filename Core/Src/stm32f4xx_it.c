@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_it.h"
+#include "plm_error.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -90,7 +91,7 @@ void HardFault_Handler(void)
 	 //HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_RESET);
 
 	 // reset timer
-	 TIM9->CNT = 0;
+	 TIM1->CNT = 0;
 
 	 // blink hardfault LED
 	 for (uint32_t i = 0; i < ERR_HARDFAULT_BLINKS; i++) {
@@ -98,8 +99,8 @@ void HardFault_Handler(void)
 	     // wait between blinks
 	     for (uint32_t j = 0; j < ERR_BLINK_PERIOD; j++) {
 	         // wait 1ms
-	         while (TIM9->CNT <= htim9.Init.Period/2) {}
-	         while (TIM9->CNT > htim9.Init.Period/2) {}
+	         while (TIM1->CNT <= htim1.Init.Period/2) {}
+	         while (TIM1->CNT > htim1.Init.Period/2) {}
 	     }
   }
   HAL_GPIO_WritePin(LED_FAULT_GPIO_Port, LED_FAULT_Pin, GPIO_PIN_RESET);

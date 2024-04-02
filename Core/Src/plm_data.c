@@ -7,6 +7,7 @@
 
 #include "plm_data.h"
 #include "GopherCAN.h"
+#include "plm_error.h"
 
 static uint8_t b1[PLM_SD_BUFFER_SIZE];
 static PLM_BUFFER buffer1 = {

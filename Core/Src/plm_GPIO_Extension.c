@@ -23,34 +23,44 @@
 
 #include "main.c"
 
-void GPIO_extension_write(PLM_POWER_CHANNEL* value){
-	uint8_t *pData[0] = &0b11111111;
-	uint8_t *pData[1] = &value;
-	HAL_I2C_Master_Transmit(hi2c2, 0b0010000, *pData, 0b10, 0x64); // if there is an error, check the timing value.
-	current_GPIO_state = value;
+void GPIO_Extension_Write(PLM_POWER_CHANNEL* value){
+	//uint8_t *pData[0] = 0b11111111;
+	//uint8_t *pData[1] = &value;
+	uint8_t buffer[2];
+	buffer[0] = 0b11111111;
+	buffer[1] = &value;
+	uint8_t *pData = &buffer;
+	HAL_I2C_Master_Transmit(&hi2c2 , 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
+	current_external_GPIO = value;
 }
 
 void GPIO_extension_overcurrent_LED(int state) {
-	uint8_t *pData[0] = &0b11111111;
+	//uint8_t *pData[0] = 0b11111111;
+	uint8_t buffer[2];
+	buffer[0] = 0b11111111;
 	if (state == 0) {
-		uint8_t *pData[1] = &(current_GPIO_state&0b11111011);
-		current_GPIO_state = current_GPIO_state&0b11111011;
+		buffer[1] = (current_external_GPIO&0b11111011);
+		current_external_GPIO = current_external_GPIO&0b11111011;
 	} else if (state = 1) {
-		uint8_t *pData[1] = &(current_GPIO_state|0b00000100);
-		current_GPIO_state = current_GPIO_state|0b00000100;
+		buffer[1] = (current_external_GPIO|0b00000100);
+		current_external_GPIO = current_external_GPIO|0b00000100;
 	}
+	uint8_t *pData = &buffer;
+	HAL_I2C_Master_Transmit(&hi2c2 , 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
 }
 
 void GPIO_Extension_toggle(int pin) {
-	uint8 *pData[0] = &0b00000000;
+	uint8_t buffer[2];
+	buffer[0] = 0b00000000;
 	if (pin == 0) {
-		uint8t *pData[1] = 0b00000001;
+		buffer[1] = 0b00000001;
 	} else if (pin == 1) {
-		uint8 *pData[1] = 0b00000010;
+		buffer[1] = 0b00000010;
 	} else if (pin == 2) {
-		uint8 *pData[1] = 0b00000100;
+		buffer[1] = 0b00000100;
 	}
-	HAL_I2C_Master_Transmit(hi2c2, 0b0010000, *pData, 0b10, 0x64); // if there is an error, check the timing value.
+	uint8_t *pData = &buffer;
+	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData, 0b10, 0x64); // if there is an error, check the timing value.
 }
 
 

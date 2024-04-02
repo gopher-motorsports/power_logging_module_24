@@ -20,6 +20,7 @@
 #include "plm_power.h"
 #include "plm_misc.h"
 #include "plm_GPIO_Extension.c"
+#include "plm_error.h"
 
 // we might need to turn this up for launch control
 #define CAN_MESSAGE_FORWARD_INTERVAL_ms 50
@@ -61,9 +62,9 @@ void plm_init(void) {
 #endif
 
     // GopherCAN
-    err |= init_can(GCAN0, &hcan1, PLM_ID, BXTYPE_MASTER);
-    err |= init_can(GCAN1, &hcan2, PLM_ID, BXTYPE_MASTER);
-    err |= init_can(GCAN2, &hcan3, PLM_ID, BXTYPE_MASTER);
+    err |= init_can(&hcan1, GCAN0);
+    err |= init_can(&hcan2, GCAN1);
+    err |= init_can(&hcan3, GCAN2);
     if (err) {
         plm_err_set(PLM_ERR_INIT);
         HAL_Delay(PLM_DELAY_RESTART);
@@ -71,7 +72,7 @@ void plm_init(void) {
     }
 
     // GopherSense
-    gsense_init(&hcan1, &hadc1, NULL, &hadc3, LED_USB_GPIO_Port, LED_USB_Pin);
+    gsense_init(&hcan1, &hadc1, NULL, &hadc3, 0, 0);
 
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
@@ -145,9 +146,9 @@ void plm_service_can(void) {
 }
 
 void GCAN_RxMsgPendingCallback(CAN_HandleTypeDef* hcan, U32 rx_mailbox) {
-    if (hcan->Instance == CAN1) hcan1_rx_callbacks++;
-    else if (hcan->Instance == CAN2) hcan2_rx_callbacks++;
-    else if (hcan->Instance == CAN3) hcan3_rx_callbacks++;
+//    if (hcan->Instance == CAN1) hcan1_rx_callbacks++;
+//    else if (hcan->Instance == CAN2) hcan2_rx_callbacks++;
+//    else if (hcan->Instance == CAN3) hcan3_rx_callbacks++;
 
     service_can_rx_hardware(hcan, rx_mailbox);
 }
@@ -210,12 +211,12 @@ void plm_collect_data(void) {
             sd_last_log[i] = tick;
         }
 
-        if (param->last_rx > xb_last_send[i] && tick - xb_last_send[i] > PLM_XB_TX_DELAY) {
-            // parameter has been updated and hasn't been sent in a while
-            PLM_RES res = plm_data_record_param(XB_DB.buffers[XB_DB.write_index], param);
-            if (res != PLM_OK) plm_err_set(res);
-            xb_last_send[i] = tick;
-        }
+//        if (param->last_rx > xb_last_send[i] && tick - xb_last_send[i] > PLM_XB_TX_DELAY) {
+//            // parameter has been updated and hasn't been sent in a while
+//            PLM_RES res = plm_data_record_param(XB_DB.buffers[XB_DB.write_index], param);
+//            if (res != PLM_OK) plm_err_set(res);
+//            xb_last_send[i] = tick;
+//        }
     }
 
     osDelay(PLM_TASK_DELAY_DATA);
@@ -316,7 +317,7 @@ void plm_monitor_current(void) {
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
             // channel has reached Amp*sec threshold, open switch
             if (i >= 7){
-            	GPIO_extension_write(channel->external_GPIO_off);
+            	GPIO_extension_write((channel->external_GPIO_off)&current_external_GPIO);
             } else {
             	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
             }
@@ -330,13 +331,13 @@ void plm_monitor_current(void) {
             if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
                 if(i >= 7){
-                	GPIO_extension_write(channel->external_GPIO_on);
+                	GPIO_extension_write((channel->external_GPIO_on)|current_external_GPIO);
                 } else {
                 	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
                 }
                 channel->enabled = 1;
                 GPIO_extension_overcurrent_LED(0);
-            } else if (channel->overcurrent_count > channel->max_overcurrent) {
+            } else if (channel->overcurrent_count > channel->max_overcurrent_count) {
 #ifdef PLM_DEV_MODE
             	printf("MAX OVERCURRENT COUNT REACHED ON CHANNEL  " + channel + " THIS CHANNEL IS NOW PERMENANTLY DISABLED!!!")
 #endif

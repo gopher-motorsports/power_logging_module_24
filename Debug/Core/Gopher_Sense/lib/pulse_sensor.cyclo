@@ -1,0 +1,7 @@
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:47:5:setup_pulse_sensor_vss_freq	15
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:135:5:setup_pulse_sensor	1
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:160:5:setup_pulse_sensor_vss	1
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:189:5:check_pulse_sensors	4
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:202:5:evaluate_pulse_sensor	33
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:416:13:clear_buffer_and_reset_dma	1
+C:/Users/Owner/Motorsport/Gopher_Sense/lib/pulse_sensor.c:423:14:convert_delta_time_to_frequency	1

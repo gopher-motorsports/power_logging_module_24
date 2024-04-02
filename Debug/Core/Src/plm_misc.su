@@ -1,0 +1,2 @@
+../Core/Src/plm_misc.c:22:6:plm_update_logging_metrics	24	static
+../Core/Src/plm_misc.c:60:6:plm_sync_rtc	48	static
