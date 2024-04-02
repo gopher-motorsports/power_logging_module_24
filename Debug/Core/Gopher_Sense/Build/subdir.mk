@@ -5,33 +5,28 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN.c \
-C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN_names.c \
-C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN_network.c 
+C:/Users/Owner/Motorsport/Gopher_Sense/Build/module_hw_config.c \
+C:/Users/Owner/Motorsport/Gopher_Sense/Build/sensors.c 
 
 OBJS += \
-./Core/gophercan-lib/GopherCAN.o \
-./Core/gophercan-lib/GopherCAN_names.o \
-./Core/gophercan-lib/GopherCAN_network.o 
+./Core/Gopher_Sense/Build/module_hw_config.o \
+./Core/Gopher_Sense/Build/sensors.o 
 
 C_DEPS += \
-./Core/gophercan-lib/GopherCAN.d \
-./Core/gophercan-lib/GopherCAN_names.d \
-./Core/gophercan-lib/GopherCAN_network.d 
+./Core/Gopher_Sense/Build/module_hw_config.d \
+./Core/Gopher_Sense/Build/sensors.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-Core/gophercan-lib/GopherCAN.o: C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN.c Core/gophercan-lib/subdir.mk
+Core/Gopher_Sense/Build/module_hw_config.o: C:/Users/Owner/Motorsport/Gopher_Sense/Build/module_hw_config.c Core/Gopher_Sense/Build/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../FATFS/Target -I../FATFS/App -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/Third_Party/FatFs/src -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc -I"C:/Users/Owner/Motorsport/Gopher_Sense" -I"C:/Users/Owner/Motorsport/gophercan-lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Build" -I"C:/Users/Owner/Motorsport/Gopher_Sense/lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Templates" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
-Core/gophercan-lib/GopherCAN_names.o: C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN_names.c Core/gophercan-lib/subdir.mk
-	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../FATFS/Target -I../FATFS/App -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/Third_Party/FatFs/src -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc -I"C:/Users/Owner/Motorsport/Gopher_Sense" -I"C:/Users/Owner/Motorsport/gophercan-lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Build" -I"C:/Users/Owner/Motorsport/Gopher_Sense/lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Templates" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
-Core/gophercan-lib/GopherCAN_network.o: C:/Users/Owner/Motorsport/gophercan-lib/GopherCAN_network.c Core/gophercan-lib/subdir.mk
+Core/Gopher_Sense/Build/sensors.o: C:/Users/Owner/Motorsport/Gopher_Sense/Build/sensors.c Core/Gopher_Sense/Build/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../FATFS/Target -I../FATFS/App -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/Third_Party/FatFs/src -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc -I"C:/Users/Owner/Motorsport/Gopher_Sense" -I"C:/Users/Owner/Motorsport/gophercan-lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Build" -I"C:/Users/Owner/Motorsport/Gopher_Sense/lib" -I"C:/Users/Owner/Motorsport/Gopher_Sense/Templates" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 
-clean: clean-Core-2f-gophercan-2d-lib
+clean: clean-Core-2f-Gopher_Sense-2f-Build
 
-clean-Core-2f-gophercan-2d-lib:
-	-$(RM) ./Core/gophercan-lib/GopherCAN.cyclo ./Core/gophercan-lib/GopherCAN.d ./Core/gophercan-lib/GopherCAN.o ./Core/gophercan-lib/GopherCAN.su ./Core/gophercan-lib/GopherCAN_names.cyclo ./Core/gophercan-lib/GopherCAN_names.d ./Core/gophercan-lib/GopherCAN_names.o ./Core/gophercan-lib/GopherCAN_names.su ./Core/gophercan-lib/GopherCAN_network.cyclo ./Core/gophercan-lib/GopherCAN_network.d ./Core/gophercan-lib/GopherCAN_network.o ./Core/gophercan-lib/GopherCAN_network.su
+clean-Core-2f-Gopher_Sense-2f-Build:
+	-$(RM) ./Core/Gopher_Sense/Build/module_hw_config.cyclo ./Core/Gopher_Sense/Build/module_hw_config.d ./Core/Gopher_Sense/Build/module_hw_config.o ./Core/Gopher_Sense/Build/module_hw_config.su ./Core/Gopher_Sense/Build/sensors.cyclo ./Core/Gopher_Sense/Build/sensors.d ./Core/Gopher_Sense/Build/sensors.o ./Core/Gopher_Sense/Build/sensors.su
 
-.PHONY: clean-Core-2f-gophercan-2d-lib
+.PHONY: clean-Core-2f-Gopher_Sense-2f-Build
 

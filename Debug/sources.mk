@@ -22,6 +22,7 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Gopher_Sense/Build \
 Core/Gopher_Sense/lib \
 Core/Src \
 Core/Startup \

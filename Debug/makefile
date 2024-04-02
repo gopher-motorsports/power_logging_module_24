@@ -26,6 +26,7 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include Core/Gopher_Sense/lib/subdir.mk
+-include Core/Gopher_Sense/Build/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -68,7 +69,8 @@ power_logging_module_24.list \
 
 
 # All Target
-all: main-build
+all:
+	+@$(MAKE) --no-print-directory pre-build && $(MAKE) --no-print-directory main-build
 
 # Main-build Target
 main-build: power_logging_module_24.elf secondary-outputs
@@ -94,6 +96,10 @@ clean:
 	-$(RM) default.size.stdout power_logging_module_24.elf power_logging_module_24.list power_logging_module_24.map
 	-@echo ' '
 
+pre-build:
+	cd .. && python config_pre_build.py go4-23e
+	-@echo ' '
+
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
 
 fail-specified-linker-script-missing:
@@ -103,6 +109,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified pre-build
 
 -include ../makefile.targets
