@@ -1,3 +1,0 @@
-../Core/Src/plm_error.c:47:6:plm_err_set	16	static
-../Core/Src/plm_error.c:59:6:plm_err_reset	16	static
-../Core/Src/plm_error.c:65:6:plm_err_blink	16	static

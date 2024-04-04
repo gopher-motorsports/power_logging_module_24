@@ -1,3 +1,0 @@
-../Core/Src/plm_sd.c:18:9:plm_sd_init	5
-../Core/Src/plm_sd.c:55:6:plm_sd_deinit	1
-../Core/Src/plm_sd.c:65:9:plm_sd_write	4
