@@ -19,7 +19,7 @@
 #include "plm_data.h"
 #include "plm_power.h"
 #include "plm_misc.h"
-#include "plm_GPIO_Extension.c"
+//#include "GPIO_interface.h"
 #include "plm_error.h"
 
 // we might need to turn this up for launch control
@@ -27,7 +27,6 @@
 
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
-extern CAN_HandleTypeDef hcan3;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -37,9 +36,10 @@ extern ADC_HandleTypeDef hadc3;
 extern PLM_DBL_BUFFER SD_DB;
 extern PLM_DBL_BUFFER XB_DB;
 
+extern I2C_HandleTypeDef hi2c2;
+
 U32 hcan1_rx_callbacks = 0;
 U32 hcan2_rx_callbacks = 0;
-U32 hcan3_rx_callbacks = 0;
 
 void plm_init(void) {
     plm_err_reset();
@@ -49,10 +49,8 @@ void plm_init(void) {
     // put CAN peripherals into loopback to receive simulated data
     hcan1.Init.Mode = CAN_MODE_LOOPBACK;
     hcan2.Init.Mode = CAN_MODE_LOOPBACK;
-    hcan3.Init.Mode = CAN_MODE_LOOPBACK;
     err |= HAL_CAN_Init(&hcan1);
     err |= HAL_CAN_Init(&hcan2);
-    err |= HAL_CAN_Init(&hcan3);
     if (err) {
         // PLM shouldn't run without CAN
         plm_err_set(PLM_ERR_INIT);
@@ -64,7 +62,6 @@ void plm_init(void) {
     // GopherCAN
     err |= init_can(&hcan1, GCAN0);
     err |= init_can(&hcan2, GCAN1);
-    err |= init_can(&hcan3, GCAN2);
     if (err) {
         plm_err_set(PLM_ERR_INIT);
         HAL_Delay(PLM_DELAY_RESTART);
@@ -139,7 +136,6 @@ void plm_service_can(void) {
 
     service_can_tx(&hcan1);
     service_can_tx(&hcan2);
-    service_can_tx(&hcan3);
     service_can_rx_buffer();
 
     osDelay(PLM_TASK_DELAY_CAN);
@@ -148,7 +144,6 @@ void plm_service_can(void) {
 void GCAN_RxMsgPendingCallback(CAN_HandleTypeDef* hcan, U32 rx_mailbox) {
 //    if (hcan->Instance == CAN1) hcan1_rx_callbacks++;
 //    else if (hcan->Instance == CAN2) hcan2_rx_callbacks++;
-//    else if (hcan->Instance == CAN3) hcan3_rx_callbacks++;
 
     service_can_rx_hardware(hcan, rx_mailbox);
 }

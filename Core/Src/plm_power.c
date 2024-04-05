@@ -9,8 +9,6 @@
 #include "main.h"
 #include "cmsis_os.h"
 
-uint8_t current_external_GPIO = 0b00000000;
-
 // CAN SUPPORT: 20A
 // IC CHANNEL:  Fans
 // EXPECTED IC: 6A

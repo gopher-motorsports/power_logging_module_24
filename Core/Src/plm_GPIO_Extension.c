@@ -19,9 +19,10 @@
  */
 
 #include "plm_power.h"
-#include "plm_power.c"
+#include "main.h"
 
-#include "main.c"
+extern I2C_HandleTypeDef hi2c2;
+
 
 void GPIO_Extension_Write(PLM_POWER_CHANNEL* value){
 	//uint8_t *pData[0] = 0b11111111;
@@ -30,7 +31,7 @@ void GPIO_Extension_Write(PLM_POWER_CHANNEL* value){
 	buffer[0] = 0b11111111;
 	buffer[1] = &value;
 	uint8_t *pData = &buffer;
-	HAL_I2C_Master_Transmit(&hi2c2 , 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
+	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
 	current_external_GPIO = value;
 }
 
@@ -46,7 +47,7 @@ void GPIO_extension_overcurrent_LED(int state) {
 		current_external_GPIO = current_external_GPIO|0b00000100;
 	}
 	uint8_t *pData = &buffer;
-	HAL_I2C_Master_Transmit(&hi2c2 , 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
+	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
 }
 
 void GPIO_Extension_toggle(int pin) {
