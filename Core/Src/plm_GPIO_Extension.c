@@ -20,48 +20,54 @@
 
 #include "plm_power.h"
 #include "main.h"
+#include "GPIO_interface.h"
 
 extern I2C_HandleTypeDef hi2c2;
+uint8_t current_external_GPIO = 0b00000000;
 
+void GPIO_init() {
+	// configure all ports on the GPIO extender as outputs
+	pData[0] = CONFIGURATION_REGISTER;
+	pData[1] = 0b11111111;
+	HAL_I2C_Master_Transmit(&hi2c2, DEVICE_ADDRESS, pData, 2, 50);
+}
 
-void GPIO_Extension_Write(PLM_POWER_CHANNEL* value){
-	//uint8_t *pData[0] = 0b11111111;
-	//uint8_t *pData[1] = &value;
-	uint8_t buffer[2];
-	buffer[0] = 0b11111111;
-	buffer[1] = &value;
-	uint8_t *pData = &buffer;
-	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
-	current_external_GPIO = value;
+void GPIO_Extension_On(int value){
+	pData[0] = OUTPUT_PORT_REGISTER;
+	pData[1] = value|current_external_GPIO;
+	HAL_I2C_Master_Transmit(&hi2c2, DEVICE_ADDRESS, pData , 2, 50); // if there is an error, check the timing value, formerly 0x64.
+	current_external_GPIO = value|current_external_GPIO;
+}
+
+void GPIO_Extension_Off(int value){
+	pData[0] = OUTPUT_PORT_REGISTER;
+	pData[1] = value&current_external_GPIO;
+	HAL_I2C_Master_Transmit(&hi2c2, DEVICE_ADDRESS, pData , 2, 50); // if there is an error, check the timing value, formerly 0x64.
+	current_external_GPIO = value&current_external_GPIO;
 }
 
 void GPIO_extension_overcurrent_LED(int state) {
-	//uint8_t *pData[0] = 0b11111111;
-	uint8_t buffer[2];
-	buffer[0] = 0b11111111;
+	pData[0] = OUTPUT_PORT_REGISTER;
 	if (state == 0) {
-		buffer[1] = (current_external_GPIO&0b11111011);
+		pData[1] = (current_external_GPIO&0b11111011);
 		current_external_GPIO = current_external_GPIO&0b11111011;
-	} else if (state = 1) {
-		buffer[1] = (current_external_GPIO|0b00000100);
+	} else if (state == 1) {
+		pData[1] = (current_external_GPIO|0b00000100);
 		current_external_GPIO = current_external_GPIO|0b00000100;
 	}
-	uint8_t *pData = &buffer;
-	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData , 0b10, 0x64); // if there is an error, check the timing value.
+	HAL_I2C_Master_Transmit(&hi2c2, (0b01000000<<1), pData , 2, 50); // if there is an error, check the timing value.
 }
 
 void GPIO_Extension_toggle(int pin) {
-	uint8_t buffer[2];
-	buffer[0] = 0b00000000;
+	pData[0] = POLARITY_INVERSION_REGISTER;
 	if (pin == 0) {
-		buffer[1] = 0b00000001;
+		pData[1] = 0b00000001;
 	} else if (pin == 1) {
-		buffer[1] = 0b00000010;
+		pData[1] = 0b00000010;
 	} else if (pin == 2) {
-		buffer[1] = 0b00000100;
+		pData[1] = 0b00000100;
 	}
-	uint8_t *pData = &buffer;
-	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, *pData, 0b10, 0x64); // if there is an error, check the timing value.
+	HAL_I2C_Master_Transmit(&hi2c2, 0b0010000, pData, 2, 50); // if there is an error, check the timing value.
 }
 
 

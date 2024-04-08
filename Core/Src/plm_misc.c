@@ -17,7 +17,6 @@ extern PLM_DBL_BUFFER XB_DB;
 
 extern U32 hcan1_rx_callbacks;
 extern U32 hcan2_rx_callbacks;
-extern U32 hcan3_rx_callbacks;
 
 void plm_update_logging_metrics(void) {
     static uint32_t last_update = 0;
@@ -38,20 +37,16 @@ void plm_update_logging_metrics(void) {
         // assumes all CAN frames are 125 bits (11-bit ID, 8 data bytes, other frame stuff)
         float hcan1_rx_bps = (hcan1_rx_callbacks * 125) / ((float)(tick - last_update) / 1000.0f);
         float hcan2_rx_bps = (hcan2_rx_callbacks * 125) / ((float)(tick - last_update) / 1000.0f);
-        float hcan3_rx_bps = (hcan3_rx_callbacks * 125) / ((float)(tick - last_update) / 1000.0f);
 
         // bus load = sampled bps / 1Mbps
         can0Utilization_percent.data = hcan1_rx_bps / 1000000.0f * 100.0f;
         can1Utilization_percent.data = hcan2_rx_bps / 1000000.0f * 100.0f;
-        can2Utilization_percent.data = hcan3_rx_bps / 1000000.0f * 100.0f;
 
         can0Utilization_percent.info.last_rx = tick;
         can1Utilization_percent.info.last_rx = tick;
-        can2Utilization_percent.info.last_rx = tick;
 
         hcan1_rx_callbacks = 0;
         hcan2_rx_callbacks = 0;
-        hcan3_rx_callbacks = 0;
 
         last_update = tick;
     }

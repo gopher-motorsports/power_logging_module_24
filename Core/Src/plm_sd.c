@@ -9,6 +9,7 @@
 #include "plm_sd.h"
 #include "main.h"
 #include "fatfs.h"
+#include "plm_error.h"
 #include <stdio.h>
 
 #define ZERO_YEAR 1970
@@ -26,7 +27,7 @@ PLM_RES plm_sd_init(void) {
 
     // empty SD driver message queue
     // this is necessary to get a clean state after disconnecting USB
-    SD_ResetMsgQueue();
+    // SD_ResetMsgQueue(); I think this might be important but it is not defined. FIX THIS____________________
 
     // register file system
     FRESULT res = f_mount(&SDFatFS, SDPath, 1);

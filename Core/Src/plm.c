@@ -19,7 +19,6 @@
 #include "plm_data.h"
 #include "plm_power.h"
 #include "plm_misc.h"
-//#include "GPIO_interface.h"
 #include "plm_error.h"
 
 // we might need to turn this up for launch control
@@ -74,14 +73,19 @@ void plm_init(void) {
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
-        HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-        if (i > 7) {
-        	GPIO_Extension_Write(channel->external_GPIO_on);
+        if (i <= 6) {
+        	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+        }
+        else if (i > 6) {
+        	GPIO_Extension_On(channel->external_GPIO_on);
         }
     }
 
     // we dont want to send parameters
 	set_all_param_sending(FALSE);
+
+	//GPIO Expander
+	GPIO_init();
 
 #ifdef PLM_DEV_MODE
     printf("PLM successfully initialized\n");
@@ -220,6 +224,7 @@ void plm_collect_data(void) {
 void plm_store_data(void) {
     // if SD is ready for FatFs interaction
     static uint8_t fs_ready = 0;
+    HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1); // ________ REMOVE THIS! THIS IS ONLY FOR TESTING
 
     // check if device is connected and ready to interact via USB
     uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
@@ -275,8 +280,8 @@ void plm_transmit_data(void) {
     if (!XB_DB.tx_cplt) {
         PLM_BUFFER* buffer = XB_DB.buffers[!XB_DB.write_index];
         if (buffer->fill > 0) {
-            PLM_RES res = plm_xb_send(buffer->bytes, buffer->fill);
-            if (res != PLM_OK) plm_err_set(res);
+            //PLM_RES res = plm_xb_send(buffer->bytes, buffer->fill);
+            //if (res != PLM_OK) plm_err_set(res);
         } else XB_DB.tx_cplt = 1;
     }
 
@@ -312,7 +317,7 @@ void plm_monitor_current(void) {
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
             // channel has reached Amp*sec threshold, open switch
             if (i >= 7){
-            	GPIO_extension_write((channel->external_GPIO_off)&current_external_GPIO);
+            	GPIO_Extension_Off((channel->external_GPIO_off));
             } else {
             	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
             }
@@ -326,7 +331,7 @@ void plm_monitor_current(void) {
             if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
                 if(i >= 7){
-                	GPIO_extension_write((channel->external_GPIO_on)|current_external_GPIO);
+                	GPIO_Extension_On((channel->external_GPIO_on));
                 } else {
                 	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
                 }

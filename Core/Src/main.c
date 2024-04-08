@@ -62,11 +62,9 @@ SD_HandleTypeDef hsd;
 
 UART_HandleTypeDef huart4;
 
-osThreadId defaultTaskHandle;
+osThreadId heartbeatHandle;
 osThreadId store_dataHandle;
 osThreadId service_canHandle;
-osThreadId transmit_dataHandle;
-osThreadId heartbeatHandle;
 osThreadId simulate_dataHandle;
 osThreadId collect_dataHandle;
 osThreadId monitor_currentHandle;
@@ -87,11 +85,9 @@ static void MX_SDIO_SD_Init(void);
 static void MX_UART4_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_RTC_Init(void);
-void StartDefaultTask(void const * argument);
+void plm_task_heartbeat(void const * argument);
 void plm_task_store_data(void const * argument);
 void plm_task_service_can(void const * argument);
-void plm_task_transmit_data(void const * argument);
-void plm_task_heartbeat(void const * argument);
 void plm_task_simulate_data(void const * argument);
 void plm_task_collect_data(void const * argument);
 void plm_task_monitor_current(void const * argument);
@@ -179,36 +175,28 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of heartbeat */
+  osThreadDef(heartbeat, plm_task_heartbeat, osPriorityLow, 0, 512);
+  heartbeatHandle = osThreadCreate(osThread(heartbeat), NULL);
 
   /* definition and creation of store_data */
-  osThreadDef(store_data, plm_task_store_data, osPriorityIdle, 0, 128);
+  osThreadDef(store_data, plm_task_store_data, osPriorityNormal, 0, 1024);
   store_dataHandle = osThreadCreate(osThread(store_data), NULL);
 
   /* definition and creation of service_can */
-  osThreadDef(service_can, plm_task_service_can, osPriorityIdle, 0, 128);
+  osThreadDef(service_can, plm_task_service_can, osPriorityNormal, 0, 1024);
   service_canHandle = osThreadCreate(osThread(service_can), NULL);
 
-  /* definition and creation of transmit_data */
-  osThreadDef(transmit_data, plm_task_transmit_data, osPriorityIdle, 0, 128);
-  transmit_dataHandle = osThreadCreate(osThread(transmit_data), NULL);
-
-  /* definition and creation of heartbeat */
-  osThreadDef(heartbeat, plm_task_heartbeat, osPriorityIdle, 0, 128);
-  heartbeatHandle = osThreadCreate(osThread(heartbeat), NULL);
-
   /* definition and creation of simulate_data */
-  osThreadDef(simulate_data, plm_task_simulate_data, osPriorityIdle, 0, 128);
+  osThreadDef(simulate_data, plm_task_simulate_data, osPriorityLow, 0, 1024);
   simulate_dataHandle = osThreadCreate(osThread(simulate_data), NULL);
 
   /* definition and creation of collect_data */
-  osThreadDef(collect_data, plm_task_collect_data, osPriorityIdle, 0, 128);
+  osThreadDef(collect_data, plm_task_collect_data, osPriorityNormal, 0, 1024);
   collect_dataHandle = osThreadCreate(osThread(collect_data), NULL);
 
   /* definition and creation of monitor_current */
-  osThreadDef(monitor_current, plm_task_monitor_current, osPriorityIdle, 0, 128);
+  osThreadDef(monitor_current, plm_task_monitor_current, osPriorityNormal, 0, 1024);
   monitor_currentHandle = osThreadCreate(osThread(monitor_current), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -763,14 +751,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_plm_task_heartbeat */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+* @brief Function implementing the heartbeat thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_plm_task_heartbeat */
+void plm_task_heartbeat(void const * argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
@@ -778,7 +766,7 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	 plm_heartbeat();
   }
   /* USER CODE END 5 */
 }
@@ -796,7 +784,7 @@ void plm_task_store_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_store_data();
   }
   /* USER CODE END plm_task_store_data */
 }
@@ -814,45 +802,9 @@ void plm_task_service_can(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	plm_service_can();
   }
   /* USER CODE END plm_task_service_can */
-}
-
-/* USER CODE BEGIN Header_plm_task_transmit_data */
-/**
-* @brief Function implementing the transmit_data thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_plm_task_transmit_data */
-void plm_task_transmit_data(void const * argument)
-{
-  /* USER CODE BEGIN plm_task_transmit_data */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END plm_task_transmit_data */
-}
-
-/* USER CODE BEGIN Header_plm_task_heartbeat */
-/**
-* @brief Function implementing the heartbeat thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_plm_task_heartbeat */
-void plm_task_heartbeat(void const * argument)
-{
-  /* USER CODE BEGIN plm_task_heartbeat */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END plm_task_heartbeat */
 }
 
 /* USER CODE BEGIN Header_plm_task_simulate_data */
@@ -868,7 +820,7 @@ void plm_task_simulate_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_simulate_data();
   }
   /* USER CODE END plm_task_simulate_data */
 }
@@ -886,7 +838,7 @@ void plm_task_collect_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_collect_data();
   }
   /* USER CODE END plm_task_collect_data */
 }
@@ -904,7 +856,7 @@ void plm_task_monitor_current(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_monitor_current();
   }
   /* USER CODE END plm_task_monitor_current */
 }

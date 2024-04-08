@@ -106,12 +106,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     PA4     ------> ADC1_IN4
     PC4     ------> ADC1_IN14
     */
-    GPIO_InitStruct.Pin = BATV_MEAS_Pin|FV_MEAS_Pin;
+    GPIO_InitStruct.Pin = VBAT_MEAS_Pin|FV_MEAS_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = TV0_Pin|TV1_Pin|TV2_Pin|TV3_Pin;
+    GPIO_InitStruct.Pin = ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin|ADC_12V_3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -136,15 +136,15 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     PA7     ------> ADC2_IN7
     PB0     ------> ADC2_IN8
     */
-    GPIO_InitStruct.Pin = TV4_Pin|TV5_Pin|TV6_Pin;
+    GPIO_InitStruct.Pin = ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = FV0_Pin;
+    GPIO_InitStruct.Pin = ADC_5V_0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(FV0_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(ADC_5V_0_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC2_MspInit 1 */
 
@@ -165,7 +165,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     PC2     ------> ADC3_IN12
     PC3     ------> ADC3_IN13
     */
-    GPIO_InitStruct.Pin = FV1_Pin|FV2_Pin|FV3_Pin|BATV_MEAS_Pin;
+    GPIO_InitStruct.Pin = ADC_5V_1_Pin|ADC_5V_2_Pin|ADC_5V_3_Pin|VBAT_MEAS_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -201,9 +201,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PA4     ------> ADC1_IN4
     PC4     ------> ADC1_IN14
     */
-    HAL_GPIO_DeInit(GPIOC, BATV_MEAS_Pin|FV_MEAS_Pin);
+    HAL_GPIO_DeInit(GPIOC, VBAT_MEAS_Pin|FV_MEAS_Pin);
 
-    HAL_GPIO_DeInit(GPIOA, TV0_Pin|TV1_Pin|TV2_Pin|TV3_Pin);
+    HAL_GPIO_DeInit(GPIOA, ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin|ADC_12V_3_Pin);
 
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
@@ -223,9 +223,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PA7     ------> ADC2_IN7
     PB0     ------> ADC2_IN8
     */
-    HAL_GPIO_DeInit(GPIOA, TV4_Pin|TV5_Pin|TV6_Pin);
+    HAL_GPIO_DeInit(GPIOA, ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin);
 
-    HAL_GPIO_DeInit(FV0_GPIO_Port, FV0_Pin);
+    HAL_GPIO_DeInit(ADC_5V_0_GPIO_Port, ADC_5V_0_Pin);
 
   /* USER CODE BEGIN ADC2_MspDeInit 1 */
 
@@ -245,7 +245,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PC2     ------> ADC3_IN12
     PC3     ------> ADC3_IN13
     */
-    HAL_GPIO_DeInit(GPIOC, FV1_Pin|FV2_Pin|FV3_Pin|BATV_MEAS_Pin);
+    HAL_GPIO_DeInit(GPIOC, ADC_5V_1_Pin|ADC_5V_2_Pin|ADC_5V_3_Pin|VBAT_MEAS_Pin);
 
   /* USER CODE BEGIN ADC3_MspDeInit 1 */
 

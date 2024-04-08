@@ -40,7 +40,6 @@ typedef struct {
 //uint8_t overcurrent_count_exceeded_event = 0;
 
 extern PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS];
-static uint8_t current_external_GPIO = 0b00000000;
 
 void plm_power_update_channel(PLM_POWER_CHANNEL* channel);
 void plm_cooling_control(void);

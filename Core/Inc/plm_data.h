@@ -16,8 +16,8 @@
 #define ESCAPE_BYTE 0x7d // next byte is escaped
 #define ESCAPE_XOR 0x20
 
-#define PLM_SD_BUFFER_SIZE 128000
-#define PLM_XB_BUFFER_SIZE 64000
+#define PLM_SD_BUFFER_SIZE 5000
+#define PLM_XB_BUFFER_SIZE 0
 
 typedef struct {
     uint8_t* bytes;
