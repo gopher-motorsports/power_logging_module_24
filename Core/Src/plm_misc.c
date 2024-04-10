@@ -13,7 +13,6 @@
 extern RTC_HandleTypeDef hrtc;
 
 extern PLM_DBL_BUFFER SD_DB;
-extern PLM_DBL_BUFFER XB_DB;
 
 extern U32 hcan1_rx_callbacks;
 extern U32 hcan2_rx_callbacks;
@@ -27,9 +26,7 @@ void plm_update_logging_metrics(void) {
 
         // SD and Xbee buffer fill %
         storageBufferFill_percent.data = (float) SD_DB.buffers[SD_DB.write_index]->fill / SD_DB.buffers[SD_DB.write_index]->size * 100.0f;
-        telemetryBufferFill_percent.data = (float) XB_DB.buffers[XB_DB.write_index]->fill / XB_DB.buffers[XB_DB.write_index]->size * 100.0f;
         storageBufferFill_percent.info.last_rx = tick;
-        telemetryBufferFill_percent.info.last_rx = tick;
 
         // CAN bus load
         // does not include messages filtered out by hardware

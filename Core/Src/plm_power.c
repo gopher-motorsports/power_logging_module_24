@@ -16,8 +16,8 @@
 // EXPECTED EV: 4A
 PLM_POWER_CHANNEL ch_12v_0 = {
     .parameter = &vbatChan0Current_A,
-//    .enable_switch_port = EN_12V_0_GPIO_Port,
-//    .enable_switch_pin = EN_12V_0_Pin,
+    .enable_switch_port = EN_12V_0_GPIO_Port,
+    .enable_switch_pin = EN_12V_0_Pin,
 	.invert = 0,
     .enabled = 0,
     .amp_max = 9.0f,
@@ -37,8 +37,8 @@ PLM_POWER_CHANNEL ch_12v_0 = {
 // EXPECTED EV: 14A
 PLM_POWER_CHANNEL ch_12v_1 = {
     .parameter = &vbatChan1Current_A,
-//    .enable_switch_port = EN_12V_1_GPIO_Port,
-//    .enable_switch_pin = EN_12V_1_Pin,
+    .enable_switch_port = EN_12V_1_GPIO_Port,
+    .enable_switch_pin = EN_12V_1_Pin,
 	.invert = 0,
     .enabled = 0,
     .amp_max = 15.0f,
@@ -58,8 +58,8 @@ PLM_POWER_CHANNEL ch_12v_1 = {
 // EXPECTED EV: 14A
 PLM_POWER_CHANNEL ch_12v_2 = {
     .parameter = &vbatChan2Current_A,
-//    .enable_switch_port = EN_12V_2_GPIO_Port,
-//    .enable_switch_pin = EN_12V_2_Pin,
+    .enable_switch_port = EN_12V_2_GPIO_Port,
+    .enable_switch_pin = EN_12V_2_Pin,
 	.invert = 0,
     .enabled = 0,
     .amp_max = 15.0f,

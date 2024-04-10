@@ -83,12 +83,12 @@ void Error_Handler(void);
 #define ADC_12V_6_GPIO_Port GPIOA
 #define FV_MEAS_Pin GPIO_PIN_4
 #define FV_MEAS_GPIO_Port GPIOC
-#define MCU_EXT_EN0_Pin GPIO_PIN_5
-#define MCU_EXT_EN0_GPIO_Port GPIOC
+#define EN_12V_0_Pin GPIO_PIN_5
+#define EN_12V_0_GPIO_Port GPIOC
 #define ADC_5V_0_Pin GPIO_PIN_0
 #define ADC_5V_0_GPIO_Port GPIOB
-#define MCU_EXT_EN2_Pin GPIO_PIN_14
-#define MCU_EXT_EN2_GPIO_Port GPIOB
+#define EN_12V_2_Pin GPIO_PIN_14
+#define EN_12V_2_GPIO_Port GPIOB
 #define EN_12V_3_Pin GPIO_PIN_15
 #define EN_12V_3_GPIO_Port GPIOB
 #define EN_12V_4_Pin GPIO_PIN_6
@@ -101,8 +101,8 @@ void Error_Handler(void);
 #define LED_FAULT_GPIO_Port GPIOA
 #define SD_SW_CD_Pin GPIO_PIN_15
 #define SD_SW_CD_GPIO_Port GPIOA
-#define MCU_EXT_EN1_Pin GPIO_PIN_4
-#define MCU_EXT_EN1_GPIO_Port GPIOB
+#define EN_12V_1_Pin GPIO_PIN_4
+#define EN_12V_1_GPIO_Port GPIOB
 #define MEDIA_nRST_Pin GPIO_PIN_5
 #define MEDIA_nRST_GPIO_Port GPIOB
 

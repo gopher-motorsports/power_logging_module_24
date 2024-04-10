@@ -12,7 +12,7 @@
 #include "main.h"
 #include "GopherCAN.h"
 #include "gopher_sense.h"
-#include "usb_device.h"
+//#include "usb_device.h"
 #include "fatfs.h"
 #include "plm_sd.h"
 #include "plm_sim.h"
@@ -20,6 +20,7 @@
 #include "plm_power.h"
 #include "plm_misc.h"
 #include "plm_error.h"
+#include "GPIO_interface.h"
 
 // we might need to turn this up for launch control
 #define CAN_MESSAGE_FORWARD_INTERVAL_ms 50
@@ -27,13 +28,13 @@
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 
-extern USBD_HandleTypeDef hUsbDeviceFS;
+//extern USBD_HandleTypeDef hUsbDeviceFS;
 
 extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 
 extern PLM_DBL_BUFFER SD_DB;
-extern PLM_DBL_BUFFER XB_DB;
 
 extern I2C_HandleTypeDef hi2c2;
 
@@ -68,7 +69,10 @@ void plm_init(void) {
     }
 
     // GopherSense
-    gsense_init(&hcan1, &hadc1, NULL, &hadc3, 0, 0);
+    gsense_init(&hcan1, &hadc1, &hadc2, &hadc3, 0, 0);
+
+    //GPIO Expander
+    	GPIO_init();
 
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
@@ -81,11 +85,13 @@ void plm_init(void) {
         }
     }
 
+    GPIO_Extension_On(0b00000001);
+    GPIO_Extension_On(0b00000010);
+    GPIO_Extension_On(0b00000100);
+
     // we dont want to send parameters
 	set_all_param_sending(FALSE);
 
-	//GPIO Expander
-	GPIO_init();
 
 #ifdef PLM_DEV_MODE
     printf("PLM successfully initialized\n");
@@ -154,16 +160,24 @@ void GCAN_RxMsgPendingCallback(CAN_HandleTypeDef* hcan, U32 rx_mailbox) {
 
 void plm_collect_data(void) {
     static uint32_t sd_last_log[NUM_OF_PARAMETERS] = {0};
-    static uint32_t xb_last_send[NUM_OF_PARAMETERS] = {0};
 
-    uint8_t usb_connected = hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED;
+    uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+    uint8_t usb_state = 0;
+    if (usb_connected & (usb_state == 0)) {
+    	HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
+    	plm_sd_deinit();
+    	usb_state = 1;
+    } else if (!usb_connected) {
+    	usb_state = 0;
+    	HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 0);
+    }
     uint8_t voltage_ok = plmVbatVoltage_V.data >= MIN_VBAT_VOLTAGE_V && plm5VVoltage_V.data >= MIN_5V_VOLTAGE_V;
 #ifdef PLM_DEV_MODE
     voltage_ok = 1;
 #endif
 
-    // must have usb disconnected and minimum 5V and Vbat voltages
-    if (usb_connected || !voltage_ok) {
+    // must have usb disconnected and minimum 5V and Vbat voltages -------------------- FIX HERE - CHECK FOR VBAT VOLTAGE
+    if (usb_connected) {
     	osDelay(PLM_TASK_DELAY_DATA);
     	return;
     }
@@ -175,14 +189,6 @@ void plm_collect_data(void) {
         SD_DB.write_index = !SD_DB.write_index;
         SD_DB.buffers[SD_DB.write_index]->fill = 0;
         SD_DB.tx_cplt = 0;
-        taskEXIT_CRITICAL();
-    }
-
-    if (XB_DB.tx_cplt) {
-        taskENTER_CRITICAL();
-        XB_DB.write_index = !XB_DB.write_index;
-        XB_DB.buffers[XB_DB.write_index]->fill = 0;
-        XB_DB.tx_cplt = 0;
         taskEXIT_CRITICAL();
     }
 
@@ -209,13 +215,6 @@ void plm_collect_data(void) {
             }
             sd_last_log[i] = tick;
         }
-
-//        if (param->last_rx > xb_last_send[i] && tick - xb_last_send[i] > PLM_XB_TX_DELAY) {
-//            // parameter has been updated and hasn't been sent in a while
-//            PLM_RES res = plm_data_record_param(XB_DB.buffers[XB_DB.write_index], param);
-//            if (res != PLM_OK) plm_err_set(res);
-//            xb_last_send[i] = tick;
-//        }
     }
 
     osDelay(PLM_TASK_DELAY_DATA);
@@ -224,7 +223,6 @@ void plm_collect_data(void) {
 void plm_store_data(void) {
     // if SD is ready for FatFs interaction
     static uint8_t fs_ready = 0;
-    HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1); // ________ REMOVE THIS! THIS IS ONLY FOR TESTING
 
     // check if device is connected and ready to interact via USB
     uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
@@ -238,7 +236,6 @@ void plm_store_data(void) {
 #endif
         plm_sd_deinit();
         fs_ready = 0;
-        HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
     }
 
     if (!usb_connected) {
@@ -277,14 +274,6 @@ void plm_store_data(void) {
 }
 
 void plm_transmit_data(void) {
-    if (!XB_DB.tx_cplt) {
-        PLM_BUFFER* buffer = XB_DB.buffers[!XB_DB.write_index];
-        if (buffer->fill > 0) {
-            //PLM_RES res = plm_xb_send(buffer->bytes, buffer->fill);
-            //if (res != PLM_OK) plm_err_set(res);
-        } else XB_DB.tx_cplt = 1;
-    }
-
     osDelay(PLM_TASK_DELAY_XB);
 }
 
@@ -308,7 +297,11 @@ void plm_monitor_current(void) {
 #ifdef GO4_23c
 	plm_cooling_control();
 #endif
-
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	uint32_t raw = HAL_ADC_GetValue(&hadc1);
+	printf("ADC: %ld\n", raw);
+	HAL_ADC_Stop(&hadc1);
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);

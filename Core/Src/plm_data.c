@@ -23,28 +23,8 @@ static PLM_BUFFER buffer2 = {
     .fill = 0
 };
 
-static uint8_t b3[PLM_XB_BUFFER_SIZE];
-static PLM_BUFFER buffer3 = {
-    .bytes = b3,
-    .size = PLM_XB_BUFFER_SIZE,
-    .fill = 0
-};
-
-static uint8_t b4[PLM_XB_BUFFER_SIZE];
-static PLM_BUFFER buffer4 = {
-    .bytes = b4,
-    .size = PLM_XB_BUFFER_SIZE,
-    .fill = 0
-};
-
 PLM_DBL_BUFFER SD_DB = {
     .buffers = { &buffer1, &buffer2 },
-    .write_index = 0,
-    .tx_cplt = 1
-};
-
-PLM_DBL_BUFFER XB_DB = {
-    .buffers = { &buffer3, &buffer4 },
     .write_index = 0,
     .tx_cplt = 1
 };
