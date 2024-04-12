@@ -40,6 +40,7 @@ extern I2C_HandleTypeDef hi2c2;
 
 U32 hcan1_rx_callbacks = 0;
 U32 hcan2_rx_callbacks = 0;
+uint8_t usb_state = 0;
 
 void plm_init(void) {
     plm_err_reset();
@@ -85,10 +86,6 @@ void plm_init(void) {
         }
     }
 
-    GPIO_Extension_On(0b00000001);
-    GPIO_Extension_On(0b00000010);
-    GPIO_Extension_On(0b00000100);
-
     // we dont want to send parameters
 	set_all_param_sending(FALSE);
 
@@ -96,6 +93,16 @@ void plm_init(void) {
 #ifdef PLM_DEV_MODE
     printf("PLM successfully initialized\n");
 #endif
+}
+
+void SD_init() {
+	uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+		if (usb_connected) {
+			HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
+			while(1){
+
+			}
+		}
 }
 
 void plm_heartbeat(void) {
@@ -162,7 +169,6 @@ void plm_collect_data(void) {
     static uint32_t sd_last_log[NUM_OF_PARAMETERS] = {0};
 
     uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
-    uint8_t usb_state = 0;
     if (usb_connected & (usb_state == 0)) {
     	HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
     	plm_sd_deinit();
@@ -176,8 +182,8 @@ void plm_collect_data(void) {
     voltage_ok = 1;
 #endif
 
-    // must have usb disconnected and minimum 5V and Vbat voltages -------------------- FIX HERE - CHECK FOR VBAT VOLTAGE
-    if (usb_connected) {
+    // must have usb disconnected and minimum 5V and Vbat voltages
+    if (usb_connected | !voltage_ok) {
     	osDelay(PLM_TASK_DELAY_DATA);
     	return;
     }
@@ -251,22 +257,23 @@ void plm_store_data(void) {
 
         if (fs_ready) {
             // write data
-            if (!SD_DB.tx_cplt) {
-                PLM_BUFFER* buffer = SD_DB.buffers[!SD_DB.write_index];
-                if (buffer->fill > 0) {
-                    PLM_RES res = plm_sd_write(buffer->bytes, buffer->fill);
-                    if (res != PLM_OK) {
-                        // write failed
-                        fs_ready = 0;
-                        plm_sd_deinit();
-                        plm_err_set(res);
-                    } else {
-                        // successful write
-                        SD_DB.tx_cplt = 1;
-                        GPIO_Extension_toggle(1);
-                    }
-                } else SD_DB.tx_cplt = 1;
-            }
+        	PLM_RES res = plm_sd_write("hello", 5);
+//            if (!SD_DB.tx_cplt) {
+//                PLM_BUFFER* buffer = SD_DB.buffers[!SD_DB.write_index];
+//                if (buffer->fill > 0) {
+//                    PLM_RES res = plm_sd_write(buffer->bytes, buffer->fill);
+//                    if (res != PLM_OK) {
+//                        // write failed
+//                        fs_ready = 0;
+//                        plm_sd_deinit();
+//                        plm_err_set(res);
+//                    } else {
+//                        // successful write
+//                        SD_DB.tx_cplt = 1;
+//                        GPIO_Extension_toggle(1);
+//                    }
+//                } else SD_DB.tx_cplt = 1;
+//            }
         }
     }
 

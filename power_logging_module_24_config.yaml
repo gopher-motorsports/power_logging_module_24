@@ -53,7 +53,7 @@ buckets:
                 sensor: five_volt_channel_current
                 samples_buffered: 10
             plmVbatVoltage_V:
-                ADC: ADC3_IN13
+                ADC: ADC1_IN13
                 sensor: vbat_voltage_reading
                 samples_buffered: 10
             plm5VVoltage_V:

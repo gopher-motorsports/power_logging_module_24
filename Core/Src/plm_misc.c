@@ -69,3 +69,4 @@ void plm_sync_rtc(void) {
         last_sync = tick;
     }
 }
+
