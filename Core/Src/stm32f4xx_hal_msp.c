@@ -23,8 +23,6 @@
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
-extern DMA_HandleTypeDef hdma_adc1;
-
 extern DMA_HandleTypeDef hdma_adc2;
 
 extern DMA_HandleTypeDef hdma_adc3;
@@ -97,57 +95,7 @@ void HAL_MspInit(void)
 void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(hadc->Instance==ADC1)
-  {
-  /* USER CODE BEGIN ADC1_MspInit 0 */
-
-  /* USER CODE END ADC1_MspInit 0 */
-    /* Peripheral clock enable */
-    __HAL_RCC_ADC1_CLK_ENABLE();
-
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**ADC1 GPIO Configuration
-    PC3     ------> ADC1_IN13
-    PA0-WKUP     ------> ADC1_IN0
-    PA2     ------> ADC1_IN2
-    PA3     ------> ADC1_IN3
-    PA4     ------> ADC1_IN4
-    */
-    GPIO_InitStruct.Pin = VBAT_MEAS_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(VBAT_MEAS_GPIO_Port, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin|ADC_12V_3_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* ADC1 DMA Init */
-    /* ADC1 Init */
-    hdma_adc1.Instance = DMA2_Stream0;
-    hdma_adc1.Init.Channel = DMA_CHANNEL_0;
-    hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_adc1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc1);
-
-  /* USER CODE BEGIN ADC1_MspInit 1 */
-
-  /* USER CODE END ADC1_MspInit 1 */
-  }
-  else if(hadc->Instance==ADC2)
+  if(hadc->Instance==ADC2)
   {
   /* USER CODE BEGIN ADC2_MspInit 0 */
 
@@ -155,25 +103,27 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     /* Peripheral clock enable */
     __HAL_RCC_ADC2_CLK_ENABLE();
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC2 GPIO Configuration
+    PC3     ------> ADC2_IN13
+    PA4     ------> ADC2_IN4
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6
     PA7     ------> ADC2_IN7
     PC4     ------> ADC2_IN14
     PB0     ------> ADC2_IN8
     */
-    GPIO_InitStruct.Pin = ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin;
+    GPIO_InitStruct.Pin = VBAT_MEAS_Pin|FV_MEAS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = ADC_12V_3_Pin|ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = FV_MEAS_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(FV_MEAS_GPIO_Port, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = ADC_5V_0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -212,15 +162,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __HAL_RCC_ADC3_CLK_ENABLE();
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
     /**ADC3 GPIO Configuration
     PC0     ------> ADC3_IN10
     PC1     ------> ADC3_IN11
     PC2     ------> ADC3_IN12
+    PA0-WKUP     ------> ADC3_IN0
+    PA2     ------> ADC3_IN2
+    PA3     ------> ADC3_IN3
     */
     GPIO_InitStruct.Pin = ADC_5V_1_Pin|ADC_5V_2_Pin|ADC_5V_3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* ADC3 DMA Init */
     /* ADC3 Init */
@@ -256,32 +215,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 */
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 {
-  if(hadc->Instance==ADC1)
-  {
-  /* USER CODE BEGIN ADC1_MspDeInit 0 */
-
-  /* USER CODE END ADC1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_ADC1_CLK_DISABLE();
-
-    /**ADC1 GPIO Configuration
-    PC3     ------> ADC1_IN13
-    PA0-WKUP     ------> ADC1_IN0
-    PA2     ------> ADC1_IN2
-    PA3     ------> ADC1_IN3
-    PA4     ------> ADC1_IN4
-    */
-    HAL_GPIO_DeInit(VBAT_MEAS_GPIO_Port, VBAT_MEAS_Pin);
-
-    HAL_GPIO_DeInit(GPIOA, ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin|ADC_12V_3_Pin);
-
-    /* ADC1 DMA DeInit */
-    HAL_DMA_DeInit(hadc->DMA_Handle);
-  /* USER CODE BEGIN ADC1_MspDeInit 1 */
-
-  /* USER CODE END ADC1_MspDeInit 1 */
-  }
-  else if(hadc->Instance==ADC2)
+  if(hadc->Instance==ADC2)
   {
   /* USER CODE BEGIN ADC2_MspDeInit 0 */
 
@@ -290,15 +224,17 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     __HAL_RCC_ADC2_CLK_DISABLE();
 
     /**ADC2 GPIO Configuration
+    PC3     ------> ADC2_IN13
+    PA4     ------> ADC2_IN4
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6
     PA7     ------> ADC2_IN7
     PC4     ------> ADC2_IN14
     PB0     ------> ADC2_IN8
     */
-    HAL_GPIO_DeInit(GPIOA, ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin);
+    HAL_GPIO_DeInit(GPIOC, VBAT_MEAS_Pin|FV_MEAS_Pin);
 
-    HAL_GPIO_DeInit(FV_MEAS_GPIO_Port, FV_MEAS_Pin);
+    HAL_GPIO_DeInit(GPIOA, ADC_12V_3_Pin|ADC_12V_4_Pin|ADC_12V_5_Pin|ADC_12V_6_Pin);
 
     HAL_GPIO_DeInit(ADC_5V_0_GPIO_Port, ADC_5V_0_Pin);
 
@@ -320,8 +256,13 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PC0     ------> ADC3_IN10
     PC1     ------> ADC3_IN11
     PC2     ------> ADC3_IN12
+    PA0-WKUP     ------> ADC3_IN0
+    PA2     ------> ADC3_IN2
+    PA3     ------> ADC3_IN3
     */
     HAL_GPIO_DeInit(GPIOC, ADC_5V_1_Pin|ADC_5V_2_Pin|ADC_5V_3_Pin);
+
+    HAL_GPIO_DeInit(GPIOA, ADC_12V_0_Pin|ADC_12V_1_Pin|ADC_12V_2_Pin);
 
     /* ADC3 DMA DeInit */
     HAL_DMA_DeInit(hadc->DMA_Handle);

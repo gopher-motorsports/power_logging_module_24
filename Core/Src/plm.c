@@ -304,11 +304,6 @@ void plm_monitor_current(void) {
 #ifdef GO4_23c
 	plm_cooling_control();
 #endif
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	uint32_t raw = HAL_ADC_GetValue(&hadc1);
-	printf("ADC: %ld\n", raw);
-	HAL_ADC_Stop(&hadc1);
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);

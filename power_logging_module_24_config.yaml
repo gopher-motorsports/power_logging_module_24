@@ -9,19 +9,19 @@ buckets:
         parameters:
             # these must directly be a variable defined in GopherCAN
             vbatChan0Current_A:
-                ADC: ADC1_IN0
+                ADC: ADC3_IN0
                 sensor: vbat_channel_current
                 samples_buffered: 10
             vbatChan1Current_A:
-                ADC: ADC1_IN2
+                ADC: ADC3_IN2
                 sensor: vbat_channel_current
                 samples_buffered: 10
             vbatChan2Current_A:
-                ADC: ADC1_IN3
+                ADC: ADC3_IN3
                 sensor: vbat_channel_current
                 samples_buffered: 10
             vbatChan3Current_A:
-                ADC: ADC1_IN4
+                ADC: ADC2_IN4
                 sensor: vbat_channel_current
                 samples_buffered: 10
             vbatChan4Current_A:
@@ -53,7 +53,7 @@ buckets:
                 sensor: five_volt_channel_current
                 samples_buffered: 10
             plmVbatVoltage_V:
-                ADC: ADC1_IN13
+                ADC: ADC2_IN13
                 sensor: vbat_voltage_reading
                 samples_buffered: 10
             plm5VVoltage_V:
