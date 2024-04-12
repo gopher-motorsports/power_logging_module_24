@@ -21,9 +21,12 @@ PLM_RES plm_sd_init(void) {
     printf("PLM (%lu): initializing SD card\n", HAL_GetTick());
 #endif
 
+    uint8_t sd_detected = HAL_GPIO_ReadPin(SD_SW_CD_GPIO_Port, SD_SW_CD_Pin) == GPIO_PIN_RESET;
+    if (!sd_detected) return PLM_ERR_SD_INIT;
+
     // checks that the card is inserted & initializes SD interface
-    DSTATUS status = SD_Driver.disk_initialize(0);
-    if (status == STA_NOINIT) return PLM_ERR_SD_INIT;
+//    DSTATUS status = SD_Driver.disk_initialize(0);
+//    if (status == STA_NOINIT) return PLM_ERR_SD_INIT;
 
     // empty SD driver message queue
     // this is necessary to get a clean state after disconnecting USB

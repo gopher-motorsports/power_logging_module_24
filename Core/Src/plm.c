@@ -182,8 +182,8 @@ void plm_collect_data(void) {
     voltage_ok = 1;
 #endif
 
-    // must have usb disconnected and minimum 5V and Vbat voltages
-    if (usb_connected | !voltage_ok) {
+    // must have usb disconnected and minimum 5V and Vbat voltages -------------------- MODIFIED TO NOT CHECK VBAT OR V5V VOLTAGE
+    if (usb_connected) {
     	osDelay(PLM_TASK_DELAY_DATA);
     	return;
     }
@@ -247,7 +247,7 @@ void plm_store_data(void) {
     if (!usb_connected) {
         if (!fs_ready) {
             // init FatFs and open the current data file
-            PLM_RES res = plm_sd_init();
+             PLM_RES res = plm_sd_init();
             if (res != PLM_OK) {
                 plm_sd_deinit();
                 plm_err_set(res);

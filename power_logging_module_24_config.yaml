@@ -57,7 +57,7 @@ buckets:
                 sensor: vbat_voltage_reading
                 samples_buffered: 10
             plm5VVoltage_V:
-                ADC: ADC1_IN14
+                ADC: ADC2_IN14
                 sensor: five_volt_voltage_reading
                 samples_buffered: 10
 
