@@ -302,7 +302,7 @@ void plm_monitor_current(void) {
 #endif
 
 #ifdef GO4_23c
-	plm_cooling_control();
+//	plm_cooling_control();
 #endif
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];

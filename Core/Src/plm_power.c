@@ -83,14 +83,14 @@ PLM_POWER_CHANNEL ch_12v_3 = {
     .enable_switch_pin = EN_12V_3_Pin,
 	.invert = 0,
     .enabled = 0,
-    .amp_max = 6.0f,
-    .ampsec_max = 3.0f,
+    .amp_max = 10.0f,
+    .ampsec_max = 5.0f,
     .ampsec_sum = 0.0f,
     .trip_time = 0,
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 10
 };
 
 // CAN SUPPORT: 10A
