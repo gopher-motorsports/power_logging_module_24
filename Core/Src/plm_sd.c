@@ -46,7 +46,13 @@ PLM_RES plm_sd_init(void) {
 
     // open data file
     // file is created if it doesn't exist
-    res = f_open(&SDFile, filename, FA_OPEN_APPEND | FA_WRITE);
+    res = f_open(&SDFile, filename, FA_WRITE | FA_CREATE_NEW);
+    while (res == FR_EXIST) {
+    	// increment timestamp until a valid filename is found
+    	time.Seconds += 1;
+    	sprintf(filename, "PLM_%04u-%02u-%02u-%02u-%02u-%02u.gdat", date.Year + ZERO_YEAR, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
+    	res = f_open(&SDFile, filename, FA_WRITE | FA_CREATE_NEW);
+    }
     if (res != FR_OK) return PLM_ERR_SD_INIT;
 
     // write the filename as metadata
@@ -63,7 +69,7 @@ void plm_sd_deinit(void) {
 
     // close file and unregister file system
     f_close(&SDFile);
-    f_mount(NULL, SDPath, 0);
+    //f_mount(NULL, SDPath, 0);
 }
 
 PLM_RES plm_sd_write(uint8_t* buffer, uint16_t size) {
