@@ -48,6 +48,7 @@ void plm_update_logging_metrics(void) {
 
         for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
                 PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
+                update_and_queue_param_float(channel->parameter, channel->parameter->data);
                 if(channel->overcurrent_count != 0) {
                 	update_and_queue_param_float(&Overcurrent_Event, 1);
                 	update_and_queue_param_float(channel->overcurrentparam, 1);
