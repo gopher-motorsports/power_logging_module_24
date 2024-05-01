@@ -37,6 +37,7 @@ extern ADC_HandleTypeDef hadc3;
 extern PLM_DBL_BUFFER SD_DB;
 
 extern I2C_HandleTypeDef hi2c2;
+extern SD_HandleTypeDef hsd;
 
 U32 hcan1_rx_callbacks = 0;
 U32 hcan2_rx_callbacks = 0;
@@ -125,10 +126,7 @@ void plm_service_can(void) {
 #ifdef GO4_23c
 		// send rear sensor hubs and other parameters on other buses for display
 		send_group(0x10);
-		send_group(0x500);
-		send_group(0x550);
-		send_group(0x600);
-		send_group(0x650);
+		send_group(0x401);
 #endif
 #ifdef GO4_23e
 		send_group(0x3B0);
@@ -229,12 +227,17 @@ void plm_store_data(void) {
         fs_ready = 0;
         uint64_t i = 0;
         //__HAL_SD_DISABLE();
+        HAL_SD_DeInit(&hsd);
+        //MX_FATFS_DeInit();
         osDelay(50);
         HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
     }
 
     if (!usb_connected) {
-    	usb_state == 0;
+    	if (usb_state == 1) {
+    		HAL_SD_Init(&hsd);
+    	}
+    	usb_state = 0;
         if (!fs_ready) {
             // init FatFs and open the current data file
              PLM_RES res = plm_sd_init();

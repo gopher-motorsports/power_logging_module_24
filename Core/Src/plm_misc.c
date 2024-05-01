@@ -9,6 +9,10 @@
 #include "plm.h"
 #include "plm_data.h"
 #include "GopherCAN.h"
+#include "plm_power.h"
+#include "main.h"
+#include "GopherCAN_network.h"
+#include "GopherCAN_names.h"
 
 extern RTC_HandleTypeDef hrtc;
 
@@ -41,6 +45,15 @@ void plm_update_logging_metrics(void) {
 
         can0Utilization_percent.info.last_rx = tick;
         can1Utilization_percent.info.last_rx = tick;
+
+        for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
+                PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
+                if(channel->overcurrent_count != 0) {
+                	update_and_queue_param_float(&Overcurrent_Event, 1);
+                	update_and_queue_param_float(channel->overcurrentparam, 1);
+                	update_and_queue_param_float(channel->overcurrentcountparam, channel->overcurrent_count);
+                }
+        }
 
         hcan1_rx_callbacks = 0;
         hcan2_rx_callbacks = 0;

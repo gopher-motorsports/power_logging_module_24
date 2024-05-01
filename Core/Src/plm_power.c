@@ -27,7 +27,9 @@ PLM_POWER_CHANNEL ch_12v_0 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_0_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_0_Overcurrent_Count
 };
 
 // CAN SUPPORT: 20A
@@ -48,7 +50,9 @@ PLM_POWER_CHANNEL ch_12v_1 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_1_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_1_Overcurrent_Count
 };
 
 // CAN SUPPORT: 20A
@@ -69,7 +73,9 @@ PLM_POWER_CHANNEL ch_12v_2 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_2_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_2_Overcurrent_Count
 };
 
 // CAN SUPPORT: 10A
@@ -90,7 +96,9 @@ PLM_POWER_CHANNEL ch_12v_3 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_3_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_3_Overcurrent_Count
 };
 
 // CAN SUPPORT: 10A
@@ -111,7 +119,9 @@ PLM_POWER_CHANNEL ch_12v_4 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_4_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_4_Overcurrent_Count
 };
 
 // CAN SUPPORT: 10A
@@ -132,7 +142,9 @@ PLM_POWER_CHANNEL ch_12v_5 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_5_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_5_Overcurrent_Count
 };
 
 // CAN SUPPORT: 10A
@@ -153,7 +165,9 @@ PLM_POWER_CHANNEL ch_12v_6 = {
     .reset_delay_ms = 1000,
     .last_update = 0,
 	.overcurrent_count = 0,
-	.max_overcurrent_count = 5
+	.max_overcurrent_count = 5,
+	.overcurrentparam = &Twelve_Volt_6_Overcurrent,
+	.overcurrentcountparam = &Twelve_Volt_6_Overcurrent_Count
 };
 
 // CAN SUPPORT: 2A
@@ -176,7 +190,9 @@ PLM_POWER_CHANNEL ch_5v_0 = {
 	.overcurrent_count = 0,
 	.max_overcurrent_count = 5,
 	.external_GPIO_on = 0b00001000,
-	.external_GPIO_off = 0b11110111
+	.external_GPIO_off = 0b11110111,
+	.overcurrentparam = &Five_Volt_0_Overcurrent,
+	.overcurrentcountparam = &Five_Volt_0_Overcurrent_Count
 };
 
 // CAN SUPPORT: 2A
@@ -199,7 +215,9 @@ PLM_POWER_CHANNEL ch_5v_1 = {
 	.overcurrent_count = 0,
 	.max_overcurrent_count = 5,
 	.external_GPIO_on = 0b00010000,
-	.external_GPIO_off = 0b11101111
+	.external_GPIO_off = 0b11101111,
+	.overcurrentparam = &Five_Volt_1_Overcurrent,
+	.overcurrentcountparam = &Five_Volt_1_Overcurrent_Count
 };
 
 // CAN SUPPORT: 2A
@@ -222,7 +240,9 @@ PLM_POWER_CHANNEL ch_5v_2 = {
 	.overcurrent_count = 0,
 	.max_overcurrent_count = 5,
 	.external_GPIO_on = 0b00100000,
-	.external_GPIO_off = 0b11011111
+	.external_GPIO_off = 0b11011111,
+	.overcurrentparam = &Five_Volt_2_Overcurrent,
+	.overcurrentcountparam = &Five_Volt_2_Overcurrent_Count
 };
 
 // CAN SUPPORT: 2A
@@ -245,7 +265,9 @@ PLM_POWER_CHANNEL ch_5v_3 = {
 	.overcurrent_count = 0,
 	.max_overcurrent_count = 5,
 	.external_GPIO_on = 0b01000000,
-	.external_GPIO_off = 0b10111111
+	.external_GPIO_off = 0b10111111,
+	.overcurrentparam = &Five_Volt_3_Overcurrent,
+	.overcurrentcountparam = &Five_Volt_3_Overcurrent_Count
 };
 
 PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS] = {

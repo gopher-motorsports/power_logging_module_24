@@ -59,6 +59,146 @@ buckets:
             plm5VVoltage_V:
                 ADC: ADC2_IN14
                 sensor: five_volt_voltage_reading
+            Overcurrent_Event:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_0_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_1_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_2_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_3_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_4_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_5_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_6_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_0_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_1_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_2_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_3_Overcurrent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_0_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_1_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_2_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_3_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_4_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_5_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Twelve_Volt_6_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_0_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_1_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_2_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            Five_Volt_3_Overcurrent_Count:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            PLM_Temp_degrees:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            PLM_Humidity_percent:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
+                samples_buffered: 10
+            PLM_Micro_Temp:
+                samples_buffered: 10
+                ADC: NON_ADC
+                sensor: NON_ADC
                 samples_buffered: 10
 
 
+            
+
+            
+
+
+
+# TODO
+# Channel overcurrent events for every channel and num times overcurrented
+# Move messages from plm_misc to be listed here
+# Temp and humidity
+# Micro temp if possible
