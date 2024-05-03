@@ -300,6 +300,11 @@ void plm_monitor_current(void) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);
 
+        //fix for spiking ADC values
+        if (channel->ampsec_sum > 200) {
+        	channel->ampsec_sum = 0;
+        }
+
 
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
             // channel has reached Amp*sec threshold, open switch
