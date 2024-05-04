@@ -35,8 +35,8 @@ typedef struct {
     uint8_t external_GPIO_on;
     uint8_t external_GPIO_off;
     uint8_t max_overcurrent_count;
-    FLOAT_CAN_STRUCT* overcurrentparam;
-    FLOAT_CAN_STRUCT* overcurrentcountparam;
+    U8_CAN_STRUCT* overcurrentparam;
+    U8_CAN_STRUCT* overcurrentcountparam;
 } PLM_POWER_CHANNEL;
 
 //uint8_t overcurrent_count_exceeded_event = 0;
