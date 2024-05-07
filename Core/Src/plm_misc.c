@@ -21,10 +21,60 @@ extern PLM_DBL_BUFFER SD_DB;
 extern U32 hcan1_rx_callbacks;
 extern U32 hcan2_rx_callbacks;
 
+typedef struct AdcValues {
+	uint16_t Raw[2]; /* Raw values from ADC */
+	double IntSensTmp; /* Temperature */
+}adcval_t;
+adcval_t Adc;
+typedef struct Flags {
+	uint8_t ADCCMPLT;
+}flag_t;
+flag_t Flg = {0, };
+
+#define TMPSENSOR_USE_INTREF 1 /* 1 - Use Internal Reference Voltage; 0 - Not use; */
+#define TMPSENSOR_AVGSLOPE 2.5 /* mV/°C */
+#define TMPSENSOR_V25  0.76 /* V (at 25 °C)  */
+#define TMPSENSOR_ADCMAX 4095.0 /* 12-bit ADC maximum value (12^2)-1)  */
+#define TMPSENSOR_ADCREFVOL  3.3 /* Typical reference voltage, V  */
+#define TMPSENSOR_ADCVREFINT  1.21 /* Internal reference voltage, V  */
+
+
+/* PFP BEGIN */
+double TMPSENSOR_getTemperature(uint16_t adc_sensor, uint16_t adc_intref);
+/* PFP END */
+
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+    if(hadc->Instance == ADC1) /* Check if the interrupt comes from ACD1 */
+    {
+    /* Set flag to true */
+    Flg.ADCCMPLT = 255;
+    }
+}
+
+double TMPSENSOR_getTemperature(uint16_t adc_sensor, uint16_t adc_intref){
+#if(TMPSENSOR_USE_INTREF)
+	double intref_vol = (TMPSENSOR_ADCMAX*TMPSENSOR_ADCVREFINT)/adc_intref;
+#else
+	double intref_vol = TMPSENSOR_ADCREFVOL;
+#endif
+	double sensor_vol = adc_sensor * intref_vol/TMPSENSOR_ADCMAX;
+	double sensor_tmp = (sensor_vol - TMPSENSOR_V25) *1000.0/TMPSENSOR_AVGSLOPE + 25.0;
+	return sensor_tmp;
+}
+
 void plm_update_logging_metrics(void) {
     static uint32_t last_update = 0;
     uint32_t tick = HAL_GetTick();
+    if (Flg.ADCCMPLT) /* Conversion completed, do calculations */ {
+        	/* Temperature Sensor ADC-value, Reference Voltage ADC-value (if use) */
+        	Adc.IntSensTmp = TMPSENSOR_getTemperature(Adc.Raw[1], Adc.Raw[0]);
+    }
     if (tick - last_update >= PLM_DELAY_LOGGING_METRICS) {
+
+    	update_and_queue_param_float(&PLM_Micro_Temp, Adc.IntSensTmp);
+
+
         packetsDropped_ul.info.last_rx = tick;
         packetsLogged_ul.info.last_rx = tick;
 

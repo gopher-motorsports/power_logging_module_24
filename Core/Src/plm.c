@@ -24,6 +24,7 @@
 
 // we might need to turn this up for launch control
 #define CAN_MESSAGE_FORWARD_INTERVAL_ms 50
+//#define NOT_ENDURANCE
 
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
@@ -307,14 +308,17 @@ void plm_monitor_current(void) {
 
 
         if (channel->ampsec_sum > channel->ampsec_max && channel->enabled) {
+#ifdef NOT_ENDURANCE
             // channel has reached Amp*sec threshold, open switch
+        	// Will not do this during endurance
             if (i >= 7){
             	GPIO_Extension_Off((channel->external_GPIO_off));
             } else {
             	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
             }
-            channel->trip_time = HAL_GetTick();
             channel->enabled = 0;
+#endif
+            channel->trip_time = HAL_GetTick();
             channel->overcurrent_count++;
             GPIO_extension_overcurrent_LED(1);
         } else if (!channel->enabled) {
