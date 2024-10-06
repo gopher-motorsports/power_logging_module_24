@@ -48,19 +48,19 @@ void plm_init(void) {
     plm_err_reset();
     S8 err = 0;
 
-#ifdef PLM_DEV_MODE
-    // put CAN peripherals into loopback to receive simulated data
-    hcan1.Init.Mode = CAN_MODE_LOOPBACK;
-    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
-    err |= HAL_CAN_Init(&hcan1);
-    err |= HAL_CAN_Init(&hcan2);
-    if (err) {
-        // PLM shouldn't run without CAN
-        plm_err_set(PLM_ERR_INIT);
-        HAL_Delay(PLM_DELAY_RESTART);
-        NVIC_SystemReset();
-    }
-#endif
+//#ifdef PLM_DEV_MODE
+//    // put CAN peripherals into loopback to receive simulated data
+//    hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+//    hcan2.Init.Mode = CAN_MODE_LOOPBACK;
+//    err |= HAL_CAN_Init(&hcan1);
+//    err |= HAL_CAN_Init(&hcan2);
+//    if (err) {
+//        // PLM shouldn't run without CAN
+//        plm_err_set(PLM_ERR_INIT);
+//        HAL_Delay(PLM_DELAY_RESTART);
+//        NVIC_SystemReset();
+//    }
+//#endif
 
     // GopherCAN
     err |= init_can(&hcan1, GCAN0); //24 GopherCan
@@ -130,17 +130,17 @@ void plm_service_can(void) {
 		send_group(0x401);
 #endif
 #ifdef GO4_23e
-		send_group(0x3B0);
-		send_group(0x3C0);
-		send_group(0x3C1);
-		send_group(0x3C2);
-		send_group(0x3A7);
-		send_group(0x396);
-		send_group(0x386);
-//		send_group(0x003);
-        send_group(0x550);
-        send_group(0x200);
-        send_group(0x201);
+//		send_group(0x3B0);
+//		send_group(0x3C0);
+//		send_group(0x3C1);
+//		send_group(0x3C2);
+//		send_group(0x3A7);
+//		send_group(0x396);
+//		send_group(0x386);
+////		send_group(0x003);
+//        send_group(0x550);
+//        send_group(0x200);
+//        send_group(0x201);
 #endif
 		last_message_send = HAL_GetTick();
 	}
@@ -152,20 +152,20 @@ void plm_service_can(void) {
     osDelay(PLM_TASK_DELAY_CAN);
 }
 
-void GCAN_RxMsgPendingCallback(CAN_HandleTypeDef* hcan, U32 rx_mailbox) {
-//    if (hcan->Instance == CAN1) hcan1_rx_callbacks++;
-//    else if (hcan->Instance == CAN2) hcan2_rx_callbacks++;
+void GCAN_onRX(CAN_HandleTypeDef* hcan){//, U32 rx_mailbox) {
+    if (hcan->Instance == CAN1) hcan1_rx_callbacks++;
+    else if (hcan->Instance == CAN2) hcan2_rx_callbacks++;
 
-    service_can_rx_hardware(hcan, rx_mailbox);
+//    service_can_rx_hardware(hcan, rx_mailbox);
 }
 
 void plm_collect_data(void) {
     static uint32_t sd_last_log[NUM_OF_PARAMETERS] = {0};
     uint8_t voltage_ok = plmVbatVoltage_V.data >= MIN_VBAT_VOLTAGE_V && plm5VVoltage_V.data >= MIN_5V_VOLTAGE_V;
     uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
-#ifdef PLM_DEV_MODE
-    voltage_ok = 1;
-#endif
+//#ifdef PLM_DEV_MODE
+//    voltage_ok = 1;
+//#endif
 
     // must have usb disconnected
     if (usb_connected) {
@@ -216,7 +216,7 @@ void plm_store_data(void) {
     static uint8_t fs_ready = 0;
 
     // check if device is connected and ready to interact via USB
-    uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+    uint8_t usb_connected = 0;//HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
 
     // prevent USB access and FatFs interaction at the same time
     // USB callbacks are in USB_DEVICE/App/usbd_storage_if.c
@@ -276,7 +276,7 @@ void plm_store_data(void) {
 }
 
 void plm_transmit_data(void) {
-    osDelay(PLM_TASK_DELAY_XB);
+//    osDelay(PLM_TASK_DELAY_XB);
 }
 
 void plm_simulate_data(void) {
@@ -337,7 +337,7 @@ void plm_monitor_current(void) {
                 GPIO_extension_overcurrent_LED(0);
             } else if (channel->overcurrent_count > channel->max_overcurrent_count) {
 #ifdef PLM_DEV_MODE
-            	printf("MAX OVERCURRENT COUNT REACHED ON CHANNEL  " + channel + " THIS CHANNEL IS NOW PERMENANTLY DISABLED!!!")
+//            	printf("MAX OVERCURRENT COUNT REACHED ON CHANNEL  ", channel, " THIS CHANNEL IS NOW PERMENANTLY DISABLED!!!");
 #endif
 				GPIO_extension_overcurrent_LED(1);
 

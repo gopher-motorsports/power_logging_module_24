@@ -12,7 +12,7 @@
 #include "plm_power.h"
 #include "main.h"
 #include "GopherCAN_network.h"
-#include "GopherCAN_names.h"
+//#include "GopherCAN_names.h"
 
 extern RTC_HandleTypeDef hrtc;
 

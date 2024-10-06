@@ -9,12 +9,12 @@
 #define INC_PLM_H_
 
 // task delays
-#define PLM_TASK_DELAY_HEARTBEAT 100
+#define PLM_TASK_DELAY_HEARTBEAT 1//100
 #define PLM_TASK_DELAY_CAN 1
 #define PLM_TASK_DELAY_DATA 1
-#define PLM_TASK_DELAY_SD 250
-#define PLM_TASK_DELAY_XB 100
-#define PLM_TASK_DELAY_SIM 5000
+#define PLM_TASK_DELAY_SD 1 //250
+#define PLM_TASK_DELAY_XB 1//100
+#define PLM_TASK_DELAY_SIM 1//5000
 #define PLM_TASK_DELAY_POWER 10
 
 // other delays
