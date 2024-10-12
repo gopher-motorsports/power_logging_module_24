@@ -10,9 +10,11 @@
 #include "main.h"
 #include "fatfs.h"
 #include "plm_error.h"
+#include "GopherCAN.h"
 #include <stdio.h>
 
-#define ZERO_YEAR 1970
+#define ZERO_YEAR 2024
+#define HOUR_CORRECTION -6
 
 extern RTC_HandleTypeDef hrtc;
 
@@ -42,7 +44,7 @@ PLM_RES plm_sd_init(void) {
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
     char filename[] = "PLM_YYYY-MM-DD-hh-mm-ss.gdat";
-    sprintf(filename, "PLM_%04u-%02u-%02u-%02u-%02u-%02u.gdat", date.Year + ZERO_YEAR, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
+    sprintf(filename, "PLM_%04u-%02u-%02u-%02u-%02u-%02u.gdat", date.Year + ZERO_YEAR, date.Month, date.Date, (U8)((((S8)time.Hours < (S8)HOUR_CORRECTION) ? ((S8)time.Hours + 24) : (S8)time.Hours) + (S8)HOUR_CORRECTION), time.Minutes, time.Seconds);
 
     // open data file
     // file is created if it doesn't exist
@@ -50,7 +52,7 @@ PLM_RES plm_sd_init(void) {
     while (res == FR_EXIST) {
     	// increment timestamp until a valid filename is found
     	time.Seconds += 1;
-    	sprintf(filename, "PLM_%04u-%02u-%02u-%02u-%02u-%02u.gdat", date.Year + ZERO_YEAR, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
+    	sprintf(filename, "PLM_%04u-%02u-%02u-%02u-%02u-%02u.gdat", date.Year + ZERO_YEAR, date.Month, date.Date, (U8)((((S8)time.Hours < (S8)HOUR_CORRECTION) ? ((S8)time.Hours + 24) : (S8)time.Hours) + (S8)HOUR_CORRECTION), time.Minutes, time.Seconds);
     	res = f_open(&SDFile, filename, FA_WRITE | FA_CREATE_NEW);
     }
     if (res != FR_OK) return PLM_ERR_SD_INIT;
