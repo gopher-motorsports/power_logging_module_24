@@ -168,10 +168,10 @@ void plm_collect_data(void) {
 //#endif
 
     // must have usb disconnected
-    if (usb_connected) {
-    	osDelay(PLM_TASK_DELAY_DATA);
-    	return;
-    }
+//    if (usb_connected) {
+//    	osDelay(PLM_TASK_DELAY_DATA);
+//    	return;
+//    }
 
     // swap buffers after transfers are complete
     // critical section entry/exit is fast and fine for a quick swap
