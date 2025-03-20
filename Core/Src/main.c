@@ -55,7 +55,6 @@ DMA_HandleTypeDef hdma_adc3;
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
-I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
 
 RTC_HandleTypeDef hrtc;
@@ -68,13 +67,15 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim10;
 
 UART_HandleTypeDef huart4;
+UART_HandleTypeDef huart1;
 
-osThreadId heartbeatHandle;
-osThreadId store_dataHandle;
 osThreadId service_canHandle;
+osThreadId store_dataHandle;
+osThreadId plm_heartbeatHandle;
 osThreadId simulate_dataHandle;
 osThreadId collect_dataHandle;
 osThreadId monitor_currentHandle;
+osThreadId tm_heartbeatHandle;
 /* USER CODE BEGIN PV */
 ADC_HandleTypeDef hadc1;
 /* USER CODE END PV */
@@ -83,24 +84,25 @@ ADC_HandleTypeDef hadc1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
+static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_ADC3_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
-static void MX_I2C1_Init(void);
-static void MX_SDIO_SD_Init(void);
-static void MX_UART4_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_RTC_Init(void);
-static void MX_TIM10_Init(void);
-static void MX_ADC1_Init(void);
+static void MX_SDIO_SD_Init(void);
+static void MX_UART4_Init(void);
+static void MX_USART1_UART_Init(void);
 static void MX_TIM3_Init(void);
-void plm_task_heartbeat(void const * argument);
-void plm_task_store_data(void const * argument);
+static void MX_TIM10_Init(void);
 void plm_task_service_can(void const * argument);
+void plm_task_store_data(void const * argument);
+void plm_task_heartbeat(void const * argument);
 void plm_task_simulate_data(void const * argument);
 void plm_task_collect_data(void const * argument);
 void plm_task_monitor_current(void const * argument);
+void tm_task_heartbeat(void const * argument);
 
 /* USER CODE BEGIN PFP */
 // redirect printf to USART (STLink Virtual COM)
@@ -154,19 +156,19 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_ADC1_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
-  MX_I2C1_Init();
-  MX_SDIO_SD_Init();
-  MX_UART4_Init();
-  MX_FATFS_Init();
   MX_I2C2_Init();
   MX_RTC_Init();
-  MX_TIM10_Init();
-  MX_ADC1_Init();
+  MX_SDIO_SD_Init();
+  MX_UART4_Init();
+  MX_USART1_UART_Init();
   MX_TIM3_Init();
+  MX_TIM10_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
   plm_init();
   /* USER CODE END 2 */
@@ -188,17 +190,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of heartbeat */
-  osThreadDef(heartbeat, plm_task_heartbeat, osPriorityLow, 0, 512);
-  heartbeatHandle = osThreadCreate(osThread(heartbeat), NULL);
+  /* definition and creation of service_can */
+  osThreadDef(service_can, plm_task_service_can, osPriorityNormal, 0, 1024);
+  service_canHandle = osThreadCreate(osThread(service_can), NULL);
 
   /* definition and creation of store_data */
   osThreadDef(store_data, plm_task_store_data, osPriorityNormal, 0, 1024);
   store_dataHandle = osThreadCreate(osThread(store_data), NULL);
 
-  /* definition and creation of service_can */
-  osThreadDef(service_can, plm_task_service_can, osPriorityNormal, 0, 1024);
-  service_canHandle = osThreadCreate(osThread(service_can), NULL);
+  /* definition and creation of plm_heartbeat */
+  osThreadDef(plm_heartbeat, plm_task_heartbeat, osPriorityLow, 0, 512);
+  plm_heartbeatHandle = osThreadCreate(osThread(plm_heartbeat), NULL);
 
   /* definition and creation of simulate_data */
   osThreadDef(simulate_data, plm_task_simulate_data, osPriorityLow, 0, 1024);
@@ -211,6 +213,10 @@ int main(void)
   /* definition and creation of monitor_current */
   osThreadDef(monitor_current, plm_task_monitor_current, osPriorityNormal, 0, 1024);
   monitor_currentHandle = osThreadCreate(osThread(monitor_current), NULL);
+
+  /* definition and creation of tm_heartbeat */
+  osThreadDef(tm_heartbeat, tm_task_heartbeat, osPriorityLow, 0, 512);
+  tm_heartbeatHandle = osThreadCreate(osThread(tm_heartbeat), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -321,7 +327,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -551,14 +557,14 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 5;
+  hcan1.Init.Prescaler = 16;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_6TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
-  hcan1.Init.AutoBusOff = ENABLE;
-  hcan1.Init.AutoWakeUp = ENABLE;
+  hcan1.Init.AutoBusOff = DISABLE;
+  hcan1.Init.AutoWakeUp = DISABLE;
   hcan1.Init.AutoRetransmission = DISABLE;
   hcan1.Init.ReceiveFifoLocked = DISABLE;
   hcan1.Init.TransmitFifoPriority = DISABLE;
@@ -588,14 +594,14 @@ static void MX_CAN2_Init(void)
 
   /* USER CODE END CAN2_Init 1 */
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 5;
+  hcan2.Init.Prescaler = 16;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_6TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_1TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
-  hcan2.Init.AutoBusOff = ENABLE;
-  hcan2.Init.AutoWakeUp = ENABLE;
+  hcan2.Init.AutoBusOff = DISABLE;
+  hcan2.Init.AutoWakeUp = DISABLE;
   hcan2.Init.AutoRetransmission = DISABLE;
   hcan2.Init.ReceiveFifoLocked = DISABLE;
   hcan2.Init.TransmitFifoPriority = DISABLE;
@@ -606,40 +612,6 @@ static void MX_CAN2_Init(void)
   /* USER CODE BEGIN CAN2_Init 2 */
 
   /* USER CODE END CAN2_Init 2 */
-
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
 
 }
 
@@ -873,6 +845,39 @@ static void MX_UART4_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -908,10 +913,11 @@ static void MX_DMA_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -919,19 +925,34 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, RFD_GPIO0_Pin|LED3_Pin|LED4_Pin|RFD_GPIO5_Pin
+                          |RFD_GPIO6_Pin|USB_RESET_Pin|EN_5V_0_Pin|EN_5V_1_Pin
+                          |EN_5V_2_Pin|LED5_Pin|BMS_LIGHT_CTRL_Pin|IMD_LIGHT_CTRL_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, EN_12V_0_Pin|EN_12V_4_Pin|EN_12V_5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, EN_12V_2_Pin|EN_12V_3_Pin|EN_12V_1_Pin|MEDIA_nRST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, EN_12V_2_Pin|EN_12V_3_Pin|EN_12V_1_Pin|USB_RESETB6_Pin
+                          |LED1_Pin|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, EN_12V_6_Pin|LED_FAULT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, LED2_Pin|LED0_Pin|RFD_GPIO3_Pin|RPD_GPIO2_Pin
+                          |RFD_GPIO1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : HS_VBUS_SNS_Pin */
-  GPIO_InitStruct.Pin = HS_VBUS_SNS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(EN_12V_6_GPIO_Port, EN_12V_6_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : RFD_GPIO0_Pin LED3_Pin LED4_Pin RFD_GPIO5_Pin
+                           RFD_GPIO6_Pin USB_RESET_Pin EN_5V_0_Pin EN_5V_1_Pin
+                           EN_5V_2_Pin LED5_Pin BMS_LIGHT_CTRL_Pin IMD_LIGHT_CTRL_Pin */
+  GPIO_InitStruct.Pin = RFD_GPIO0_Pin|LED3_Pin|LED4_Pin|RFD_GPIO5_Pin
+                          |RFD_GPIO6_Pin|USB_RESET_Pin|EN_5V_0_Pin|EN_5V_1_Pin
+                          |EN_5V_2_Pin|LED5_Pin|BMS_LIGHT_CTRL_Pin|IMD_LIGHT_CTRL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(HS_VBUS_SNS_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : EN_12V_0_Pin EN_12V_4_Pin EN_12V_5_Pin */
   GPIO_InitStruct.Pin = EN_12V_0_Pin|EN_12V_4_Pin|EN_12V_5_Pin;
@@ -940,56 +961,65 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EN_12V_2_Pin EN_12V_3_Pin EN_12V_1_Pin MEDIA_nRST_Pin */
-  GPIO_InitStruct.Pin = EN_12V_2_Pin|EN_12V_3_Pin|EN_12V_1_Pin|MEDIA_nRST_Pin;
+  /*Configure GPIO pins : SCD_MCU_1_Pin SDC_MCU_2_Pin SDC_MCU_3_Pin SDC_MCU_4_Pin */
+  GPIO_InitStruct.Pin = SCD_MCU_1_Pin|SDC_MCU_2_Pin|SDC_MCU_3_Pin|SDC_MCU_4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : USB_BUS_SNS_Pin */
+  GPIO_InitStruct.Pin = USB_BUS_SNS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USB_BUS_SNS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : EN_12V_2_Pin EN_12V_3_Pin EN_12V_1_Pin USB_RESETB6_Pin
+                           LED1_Pin PB8 PB9 */
+  GPIO_InitStruct.Pin = EN_12V_2_Pin|EN_12V_3_Pin|EN_12V_1_Pin|USB_RESETB6_Pin
+                          |LED1_Pin|GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EN_12V_6_Pin LED_FAULT_Pin */
-  GPIO_InitStruct.Pin = EN_12V_6_Pin|LED_FAULT_Pin;
+  /*Configure GPIO pins : LED2_Pin LED0_Pin RFD_GPIO3_Pin RPD_GPIO2_Pin
+                           RFD_GPIO1_Pin */
+  GPIO_InitStruct.Pin = LED2_Pin|LED0_Pin|RFD_GPIO3_Pin|RPD_GPIO2_Pin
+                          |RFD_GPIO1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  /*Configure GPIO pin : EN_12V_6_Pin */
+  GPIO_InitStruct.Pin = EN_12V_6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(EN_12V_6_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SDIO_CD_Pin */
+  GPIO_InitStruct.Pin = SDIO_CD_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(SDIO_CD_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA11 PA12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SD_SW_CD_Pin */
-  GPIO_InitStruct.Pin = SD_SW_CD_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(SD_SW_CD_GPIO_Port, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_plm_task_heartbeat */
+/* USER CODE BEGIN Header_plm_task_service_can */
 /**
-* @brief Function implementing the heartbeat thread.
+* @brief Function implementing the service_can thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_task_heartbeat */
-void plm_task_heartbeat(void const * argument)
+/* USER CODE END Header_plm_task_service_can */
+void plm_task_service_can(void const * argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -1018,22 +1048,22 @@ void plm_task_store_data(void const * argument)
   /* USER CODE END plm_task_store_data */
 }
 
-/* USER CODE BEGIN Header_plm_task_service_can */
+/* USER CODE BEGIN Header_plm_task_heartbeat */
 /**
-* @brief Function implementing the service_can thread.
+* @brief Function implementing the heartbeat thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_plm_task_service_can */
-void plm_task_service_can(void const * argument)
+/* USER CODE END Header_plm_task_heartbeat */
+void plm_task_heartbeat(void const * argument)
 {
-  /* USER CODE BEGIN plm_task_service_can */
+  /* USER CODE BEGIN plm_task_heartbeat */
   /* Infinite loop */
   for(;;)
   {
-	plm_service_can();
+    osDelay(1);
   }
-  /* USER CODE END plm_task_service_can */
+  /* USER CODE END plm_task_heartbeat */
 }
 
 /* USER CODE BEGIN Header_plm_task_simulate_data */
@@ -1090,6 +1120,24 @@ void plm_task_monitor_current(void const * argument)
   /* USER CODE END plm_task_monitor_current */
 }
 
+/* USER CODE BEGIN Header_tm_task_heartbeat */
+/**
+* @brief Function implementing the tm_heartbeat thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_tm_task_heartbeat */
+void tm_task_heartbeat(void const * argument)
+{
+  /* USER CODE BEGIN tm_task_heartbeat */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END tm_task_heartbeat */
+}
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
@@ -1103,7 +1151,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM1)
+  {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
