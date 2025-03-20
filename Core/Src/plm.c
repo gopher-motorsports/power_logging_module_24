@@ -108,7 +108,9 @@ void plm_heartbeat(void) {
 #ifdef PLM_DEV_MODE
         printf("PLM (%lu): ⚡\n", tick);
 #endif
-        GPIO_Extension_toggle(0);
+        //GPIO_Extension_toggle(0);
+
+        HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
         last_blink = tick;
     }
 
