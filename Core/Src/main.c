@@ -56,7 +56,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-ADC_HandleTypeDef hadc1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
