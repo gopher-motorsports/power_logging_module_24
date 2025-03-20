@@ -32,6 +32,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>STM32F4xx_HAL_Driver</name>
+			<type>2</type>
+			<location>C:/Users/Alex T/Documents/GitHub/power_logging_module_25_v2/Drivers/STM32F4xx_HAL_Driver</location>
+		</link>
+		<link>
 			<name>Core/Gopher_Sense</name>
 			<type>2</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Gopher_Sense</locationURI>

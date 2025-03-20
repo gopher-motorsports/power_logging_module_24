@@ -162,7 +162,7 @@ void GCAN_onRX(CAN_HandleTypeDef* hcan){//, U32 rx_mailbox) {
 void plm_collect_data(void) {
     static uint32_t sd_last_log[NUM_OF_PARAMETERS] = {0};
     uint8_t voltage_ok = plmVbatVoltage_V.data >= MIN_VBAT_VOLTAGE_V && plm5VVoltage_V.data >= MIN_5V_VOLTAGE_V;
-    uint8_t usb_connected = HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+    uint8_t usb_connected = HAL_GPIO_ReadPin(USB_BUS_SNS_GPIO_Port, USB_BUS_SNS_Pin);
 //#ifdef PLM_DEV_MODE
 //    voltage_ok = 1;
 //#endif
@@ -233,7 +233,7 @@ void plm_store_data(void) {
         HAL_SD_DeInit(&hsd);
         //MX_FATFS_DeInit();
         osDelay(50);
-        HAL_GPIO_WritePin(MEDIA_nRST_GPIO_Port, MEDIA_nRST_Pin, 1);
+        HAL_GPIO_WritePin(USB_RESET_GPIO_Port, USB_RESET_Pin, 1);
     }
 
     if (!usb_connected) {

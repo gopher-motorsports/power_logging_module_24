@@ -119,8 +119,8 @@ void Error_Handler(void);
 #define EN_12V_2_GPIO_Port GPIOB
 #define EN_12V_3_Pin GPIO_PIN_15
 #define EN_12V_3_GPIO_Port GPIOB
-#define LED2_Pin GPIO_PIN_14
-#define LED2_GPIO_Port GPIOD
+#define LED_FAULT_Pin GPIO_PIN_14
+#define LED_FAULT_GPIO_Port GPIOD
 #define LED0_Pin GPIO_PIN_15
 #define LED0_GPIO_Port GPIOD
 #define EN_12V_4_Pin GPIO_PIN_6
