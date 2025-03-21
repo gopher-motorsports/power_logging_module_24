@@ -75,7 +75,6 @@ osThreadId plm_heartbeatHandle;
 osThreadId simulate_dataHandle;
 osThreadId collect_dataHandle;
 osThreadId monitor_currentHandle;
-osThreadId tm_heartbeatHandle;
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
 
@@ -101,7 +100,6 @@ void plm_task_heartbeat(void const * argument);
 void plm_task_simulate_data(void const * argument);
 void plm_task_collect_data(void const * argument);
 void plm_task_monitor_current(void const * argument);
-void tm_task_heartbeat(void const * argument);
 
 /* USER CODE BEGIN PFP */
 // redirect printf to USART (STLink Virtual COM)
@@ -202,7 +200,7 @@ int main(void)
   plm_heartbeatHandle = osThreadCreate(osThread(plm_heartbeat), NULL);
 
   /* definition and creation of simulate_data */
-  osThreadDef(simulate_data, plm_task_simulate_data, osPriorityLow, 0, 1024);
+  osThreadDef(simulate_data, plm_task_simulate_data, osPriorityLow, 0, 512);
   simulate_dataHandle = osThreadCreate(osThread(simulate_data), NULL);
 
   /* definition and creation of collect_data */
@@ -212,10 +210,6 @@ int main(void)
   /* definition and creation of monitor_current */
   osThreadDef(monitor_current, plm_task_monitor_current, osPriorityNormal, 0, 1024);
   monitor_currentHandle = osThreadCreate(osThread(monitor_current), NULL);
-
-  /* definition and creation of tm_heartbeat */
-  osThreadDef(tm_heartbeat, tm_task_heartbeat, osPriorityLow, 0, 512);
-  tm_heartbeatHandle = osThreadCreate(osThread(tm_heartbeat), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1003,7 +997,7 @@ void plm_task_service_can(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_service_can();
   }
   /* USER CODE END 5 */
 }
@@ -1021,7 +1015,7 @@ void plm_task_store_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_store_data();
   }
   /* USER CODE END plm_task_store_data */
 }
@@ -1039,7 +1033,7 @@ void plm_task_heartbeat(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_heartbeat();
   }
   /* USER CODE END plm_task_heartbeat */
 }
@@ -1057,7 +1051,7 @@ void plm_task_simulate_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_simulate_data();
   }
   /* USER CODE END plm_task_simulate_data */
 }
@@ -1075,7 +1069,7 @@ void plm_task_collect_data(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_collect_data();
   }
   /* USER CODE END plm_task_collect_data */
 }
@@ -1093,27 +1087,9 @@ void plm_task_monitor_current(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  plm_monitor_current();
   }
   /* USER CODE END plm_task_monitor_current */
-}
-
-/* USER CODE BEGIN Header_tm_task_heartbeat */
-/**
-* @brief Function implementing the tm_heartbeat thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_tm_task_heartbeat */
-void tm_task_heartbeat(void const * argument)
-{
-  /* USER CODE BEGIN tm_task_heartbeat */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END tm_task_heartbeat */
 }
 
 /**

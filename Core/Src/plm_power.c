@@ -170,8 +170,8 @@ PLM_POWER_CHANNEL ch_12v_6 = {
 // EXPECTED EV: 0.5A
 PLM_POWER_CHANNEL ch_5v_0 = {
     .parameter = &fiveVChan0Current_A,
-//    .enable_switch_port = EN_5V_0_GPIO_Port,
-//    .enable_switch_pin = EN_5V_0_Pin,
+    .enable_switch_port = EN_5V_0_GPIO_Port,
+    .enable_switch_pin = EN_5V_0_Pin,
 	.enabled = 0,
 	.amp_max = 1.0f,
 	.ampsec_max = 0.5f,
@@ -194,8 +194,8 @@ PLM_POWER_CHANNEL ch_5v_0 = {
 // EXPECTED EV: 0.5A
 PLM_POWER_CHANNEL ch_5v_1 = {
     .parameter = &fiveVChan1Current_A,
-//   .enable_switch_port = EN_5V_1_GPIO_Port,
-//    .enable_switch_pin = EN_5V_1_Pin,
+   .enable_switch_port = EN_5V_1_GPIO_Port,
+    .enable_switch_pin = EN_5V_1_Pin,
 	.enabled = 0,
 	.amp_max = 1.0f,
 	.ampsec_max = 0.5f,
@@ -218,8 +218,8 @@ PLM_POWER_CHANNEL ch_5v_1 = {
 // EXPECTED EV: 0.5A
 PLM_POWER_CHANNEL ch_5v_2 = {
     .parameter = &fiveVChan2Current_A,
-//    .enable_switch_port = EN_5V_2_GPIO_Port,
-//    .enable_switch_pin = EN_5V_2_Pin,
+    .enable_switch_port = EN_5V_2_GPIO_Port,
+    .enable_switch_pin = EN_5V_2_Pin,
 	.enabled = 0,
 	.amp_max = 1.0f,
 	.ampsec_max = 0.5f,

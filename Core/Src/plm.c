@@ -64,7 +64,7 @@ void plm_init(void) {
 
     // GopherCAN
     err |= init_can(&hcan1, GCAN0); //24 GopherCan
-    err |= init_can(&hcan2, GCAN1); //24 GopherCan
+//    err |= init_can(&hcan2, GCAN1); //24 GopherCan
     //err |= init_can(GCAN0, &hcan1, PLM_ID, BXTYPE_MASTER); //23 GopherCan
     //err |= init_can(GCAN1, &hcan2, PLM_ID, BXTYPE_MASTER); //23 GopherCan
 
@@ -75,20 +75,26 @@ void plm_init(void) {
     }
 
     // GopherSense
-    gsense_init(&hcan1, &hadc1, &hadc2, &hadc3, 0, 0);
+    gsense_init(&hcan1, &hadc1, &hadc2, &hadc3, LED4_GPIO_Port, LED4_Pin);
 
     //GPIO Expander
-    	GPIO_init();
+//    	GPIO_init();
+
+    // enable all power channel switches
+//    for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
+//        PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
+//        if (i <= 6) {
+//        	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+//        }
+//        else if (i > 6) {
+//        	GPIO_Extension_On(channel->external_GPIO_on);
+//        }
+//    }
 
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
-        if (i <= 6) {
-        	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-        }
-        else if (i > 6) {
-        	GPIO_Extension_On(channel->external_GPIO_on);
-        }
+        HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
     }
 
     // we dont want to send parameters
@@ -147,8 +153,8 @@ void plm_service_can(void) {
 		last_message_send = HAL_GetTick();
 	}
 
-    service_can_tx(&hcan1);
-    service_can_tx(&hcan2);
+//    service_can_tx(&hcan1);
+//    service_can_tx(&hcan2);
     service_can_rx_buffer();
 
     osDelay(PLM_TASK_DELAY_CAN);
