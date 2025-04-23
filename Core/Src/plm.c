@@ -64,9 +64,9 @@ void plm_init(void) {
 
     // GopherCAN
     err |= init_can(&hcan1, GCAN0); //24 GopherCan
-//    err |= init_can(&hcan2, GCAN1); //24 GopherCan
-    //err |= init_can(GCAN0, &hcan1, PLM_ID, BXTYPE_MASTER); //23 GopherCan
-    //err |= init_can(GCAN1, &hcan2, PLM_ID, BXTYPE_MASTER); //23 GopherCan
+    err |= init_can(&hcan2, GCAN1); //24 GopherCan
+//    err |= init_can(GCAN0, &hcan1, PLM_ID, BXTYPE_MASTER); //23 GopherCan
+//    err |= init_can(GCAN1, &hcan2, PLM_ID, BXTYPE_MASTER); //23 GopherCan
 
     if (err) {
         plm_err_set(PLM_ERR_INIT);
@@ -132,6 +132,7 @@ void plm_service_can(void) {
 	static U32 last_message_send = 0;
 	if (HAL_GetTick() - last_message_send >= CAN_MESSAGE_FORWARD_INTERVAL_ms)
 	{
+	send_group(0x200);
 #ifdef GO4_23c
 		// send rear sensor hubs and other parameters on other buses for display
 		send_group(0x10);
