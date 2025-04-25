@@ -154,8 +154,8 @@ void plm_service_can(void) {
 		last_message_send = HAL_GetTick();
 	}
 
-//    service_can_tx(&hcan1);
-//    service_can_tx(&hcan2);
+      service_can_tx(&hcan1);
+      service_can_tx(&hcan2);
     service_can_rx_buffer();
 
     osDelay(PLM_TASK_DELAY_CAN);
