@@ -52,15 +52,13 @@ void GPIO_Extension_Off(int value){
 }
 
 void GPIO_extension_overcurrent_LED(int state) {
-	pData[0] = OUTPUT_PORT_REGISTER;
-	if (state == 0) {
-		pData[1] = (current_external_GPIO&0b11111011);
-		current_external_GPIO = current_external_GPIO&0b11111011;
-	} else if (state == 1) {
-		pData[1] = (current_external_GPIO|0b00000100);
-		current_external_GPIO = current_external_GPIO|0b00000100;
+	if (state){
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1);
 	}
-	HAL_I2C_Master_Transmit(&hi2c2, DEVICE_ADDRESS, pData , 2, 50); // if there is an error, check the timing value.
+	else{
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 0);
+	}
+
 }
 
 void GPIO_Extension_toggle(int pin) {
