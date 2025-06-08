@@ -288,6 +288,32 @@ void plm_store_data(void) {
 void plm_transmit_data(void) {
 //    osDelay(PLM_TASK_DELAY_XB);
 }
+// Turn on imd error light 
+void plm_imdlights(void)
+{
+if ( imdFault_state.data = 1)
+{
+    HAL_GPIO_WritePin(GPIOE,IMD_LIGHT_CTRL_Pin, GPIO_PIN_SET)
+}
+// Turn light off if no longer in error state 
+else {
+    HAL_GPIO_WritePin(GPIOE,IMD_LIGHT_CTRL_Pin, GPIO_PIN_RESET)
+}
+    }
+
+//Turn on bms error light
+    void plm_bmslights(void)
+{
+if (amsFault_state.data = 1)
+{
+    HAL_GPIO_WritePin(GPIOE,BMS_LIGHT_CTRL_Pin, GPIO_PIN_SET)
+}
+// Turn light off if no longer in error state 
+else{
+    HAL_GPIO_WritePin(GPIOE,BMS_LIGHT_CTRL_Pin, GPIO_PIN_RESET)
+}
+    }
+
 
 void plm_simulate_data(void) {
 #ifndef PLM_SIMULATE_DATA
