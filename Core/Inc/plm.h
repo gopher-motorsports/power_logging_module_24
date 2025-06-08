@@ -43,5 +43,6 @@ void plm_simulate_data(void);
 void plm_monitor_current(void);
 void plm_imdlights(void);
 void plm_bmslights(void);
+void plm_fan_control(void);
 
 #endif /* INC_PLM_H_ */

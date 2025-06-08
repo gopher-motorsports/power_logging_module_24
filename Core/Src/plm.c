@@ -288,6 +288,7 @@ void plm_store_data(void) {
 void plm_transmit_data(void) {
 //    osDelay(PLM_TASK_DELAY_XB);
 }
+
 // Turn on imd error light 
 void plm_imdlights(void)
 {
@@ -326,6 +327,19 @@ void plm_simulate_data(void) {
     osDelay(PLM_TASK_DELAY_SIM);
 
 }
+
+// Replace the placeholder with the can variable from the fvc when it gets defined
+// void plm_fan_control(void)
+// {
+//     PLM_POWER_CHANNEL* fchannel= POWER_CHANNELS[4];
+//     if (int radfan_placeholder = 1){
+//         fchannel->enable_switch_pin = 1;
+//     }
+//     else {
+//         fchannel->enable_switch_pin = 0;
+//     }
+
+// }
 
 void plm_monitor_current(void) {
 #ifdef PLM_DEV_MODE
