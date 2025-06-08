@@ -11,7 +11,7 @@
 #include "main.h"
 #include "GopherCAN.h"
 
-#define NUM_OF_CHANNELS 11
+#define NUM_OF_CHANNELS 10
 #define MIN_5V_VOLTAGE_V 2.0f
 #define MIN_VBAT_VOLTAGE_V 2.0f
 

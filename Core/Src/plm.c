@@ -24,7 +24,8 @@
 
 // we might need to turn this up for launch control
 #define CAN_MESSAGE_FORWARD_INTERVAL_ms 50
-//#define NOT_ENDURANCE
+#define NOT_ENDURANCE
+#define PLM_JANK
 
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
@@ -322,11 +323,7 @@ void plm_monitor_current(void) {
 #ifdef NOT_ENDURANCE
             // channel has reached Amp*sec threshold, open switch
         	// Will not do this during endurance
-            if (i >= 7){
-            	GPIO_Extension_Off((channel->external_GPIO_off));
-            } else {
             	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
-            }
             channel->enabled = 0;
 #endif
             channel->trip_time = HAL_GetTick();
@@ -337,13 +334,11 @@ void plm_monitor_current(void) {
             uint32_t ms_since_trip = HAL_GetTick() - channel->trip_time;
             if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
-                if(i >= 7){
-                	GPIO_Extension_On((channel->external_GPIO_on));
-                } else {
-                	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-                }
+                //Channel turns on
+                HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+
                 channel->enabled = 1;
-                GPIO_extension_overcurrent_LED(0);
+//                GPIO_extension_overcurrent_LED(0);
             } else if (channel->overcurrent_count > channel->max_overcurrent_count) {
 #ifdef PLM_DEV_MODE
 //            	printf("MAX OVERCURRENT COUNT REACHED ON CHANNEL  ", channel, " THIS CHANNEL IS NOW PERMENANTLY DISABLED!!!");

@@ -19,7 +19,7 @@ PLM_POWER_CHANNEL ch_12v_0 = {
 	.enable_switch_port = EN_12V_0_GPIO_Port,
 	.enable_switch_pin = EN_12V_0_Pin,
 	.enabled = 0,
-	.amp_max = 33.0f,
+	.amp_max = 15.0f,
 	.ampsec_max = 4.5f,
 	.ampsec_sum = 0.0f,
 	.trip_time = 0,
@@ -41,7 +41,7 @@ PLM_POWER_CHANNEL ch_12v_1 = {
 	.enable_switch_port = EN_12V_1_GPIO_Port,
 	.enable_switch_pin = EN_12V_1_Pin,
 	.enabled = 0,
-	.amp_max = 32.0f,
+	.amp_max = 15.0f,
 	.ampsec_max = 5.0f,
 	.ampsec_sum = 0.0f,
 	.trip_time = 0,
@@ -240,25 +240,26 @@ PLM_POWER_CHANNEL ch_5v_2 = {
 // EXPECTED IC: 0.5A
 // EV CHANNEL:  Aux 5V
 // EXPECTED EV: 0.5A
-PLM_POWER_CHANNEL ch_5v_3 = {
-    .parameter = &fiveVChan3Current_A,
-//    .enable_switch_port = EN_5V_3_GPIO_Port,
-//    .enable_switch_pin = EN_5V_3_Pin,
-	.enabled = 0,
-	.amp_max = 1.0f,
-	.ampsec_max = 0.5f,
-	.ampsec_sum = 0.0f,
-	.trip_time = 0,
-	.reset_delay_ms = 1000,
-	.last_update = 0,
-	.max_overcurrent_count = 5,
-	.external_GPIO_on = 0b01000000,
-	.external_GPIO_off = 0b10111111,
-	.overcurrentparam = &Five_Volt_3_Overcurrent,
-	.overcurrentcountparam = &Five_Volt_3_Overcurrent_Count
-};
+// PLM_POWER_CHANNEL ch_5v_3 = {
+//     .parameter = &fiveVChan3Current_A,
+// //    .enable_switch_port = EN_5V_3_GPIO_Port,
+// //    .enable_switch_pin = EN_5V_3_Pin,
+// 	.enabled = 0,
+// 	.amp_max = 1.0f,
+// 	.ampsec_max = 0.5f,
+// 	.ampsec_sum = 0.0f,
+// 	.trip_time = 0,
+// 	.reset_delay_ms = 1000,
+// 	.last_update = 0,
+// 	.max_overcurrent_count = 5,
+// 	.external_GPIO_on = 0b01000000,
+// 	.external_GPIO_off = 0b10111111,
+// 	.overcurrentparam = &Five_Volt_3_Overcurrent,
+// 	.overcurrentcountparam = &Five_Volt_3_Overcurrent_Count
+// };
 
 PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS] = {
+	&ch_5v_2,
     &ch_12v_0,
     &ch_12v_1,
     &ch_12v_2,
@@ -268,8 +269,8 @@ PLM_POWER_CHANNEL* POWER_CHANNELS[NUM_OF_CHANNELS] = {
     &ch_12v_6,
     &ch_5v_0,
     &ch_5v_1,
-    &ch_5v_2,
-    &ch_5v_3,
+//    &ch_5v_2,
+//    &ch_5v_3,
 };
 
 
