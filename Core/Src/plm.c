@@ -392,3 +392,23 @@ void plm_monitor_current(void) {
 
     osDelay(PLM_TASK_DELAY_POWER);
 }
+
+
+
+void plm_sdc_sense(void) {
+
+    static uint8_t statSDC5 = 0;
+    static uint8_t statSDC6 = 0;
+    static uint8_t statSDC7 = 0;
+    // check status of each SDC pin
+    // if the pin is low, SDC status is good -> do nothing
+    // if the pin is high, SDC status is bad -> act accordingly
+    statSDC5 = HAL_GPIO_ReadPin(SDC_MCU_1_GPIO_Port,SDC_MCU_1_Pin);
+    statSDC6 = HAL_GPIO_ReadPin(SDC_MCU_2_GPIO_Port,SDC_MCU_2_Pin);
+    statSDC7 = HAL_GPIO_ReadPin(SDC_MCU_3_GPIO_Port,SDC_MCU_3_Pin);
+
+    update_and_queue_param_u8(&sdcStatus5,statSDC5);
+    update_and_queue_param_u8(&sdcStatus6,statSDC6);
+    update_and_queue_param_u8(&sdcStatus7,statSDC7);
+
+}
