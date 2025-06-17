@@ -94,8 +94,18 @@ void plm_init(void) {
 
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
-        PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
-        HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+    	GPIO_PinState set_state;
+
+    	// Skip over cooling (fan) power channel pin if we're doing cooling control
+    	// because otherwise this will turn on the fan every time the car turns on
+    	if (COOLING_CONTROL && (i == COOLING_POWER_CH_ID)) {
+    		set_state = GPIO_PIN_RESET;
+    	} else {
+    		set_state = GPIO_PIN_SET;
+    	}
+
+		PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
+		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, set_state);
     }
 
     // we dont want to send parameters
@@ -348,9 +358,6 @@ void plm_monitor_current(void) {
     osThreadTerminate(osThreadGetId());
 #endif
 
-#ifdef GO4_23c
-	//plm_cooling_control();
-#endif
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);
@@ -376,9 +383,10 @@ void plm_monitor_current(void) {
             uint32_t ms_since_trip = HAL_GetTick() - channel->trip_time;
             if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
-                //Channel turns on
-                HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-
+                if (i != COOLING_POWER_CH_ID) {
+                	// Physically enable channel if it's not the cooling channel, otherwise let cooling_control decide to enable instead
+                	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+                }
                 channel->enabled = 1;
 //                GPIO_extension_overcurrent_LED(0);
             } else if (channel->overcurrent_count > channel->max_overcurrent_count) {
@@ -388,6 +396,9 @@ void plm_monitor_current(void) {
 				GPIO_extension_overcurrent_LED(1);
 
             }
+        } else if ((i == COOLING_POWER_CH_ID) && channel->enabled) {
+        	// If there's no overcurrent/re-enable events and the channel is allowed to be enabled, turn/on off cooling (fan) channel
+        	plm_cooling_control();
         }
     }
 

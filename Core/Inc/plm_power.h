@@ -19,6 +19,9 @@
 #define WHEEL_SPEED_FAN_OFF_THRESH_mph 20.0f
 #define TRUST_VALUE_TIME_DELTA_ms 200
 
+#define COOLING_CONTROL TRUE
+#define COOLING_POWER_CH_ID 2 // 12V Channel B2
+
 typedef struct {
     FLOAT_CAN_STRUCT* parameter;
     GPIO_TypeDef* enable_switch_port;
