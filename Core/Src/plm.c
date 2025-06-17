@@ -227,34 +227,35 @@ void plm_store_data(void) {
     static uint8_t fs_ready = 0;
 
     // check if device is connected and ready to interact via USB
-    uint8_t usb_connected = 0;//HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+   // uint8_t usb_connected = 0;//HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
 
     // prevent USB access and FatFs interaction at the same time
     // USB callbacks are in USB_DEVICE/App/usbd_storage_if.c
     // uses the FatFs driver in FATFS/Target/sd_diskio.c
-	if (usb_connected && (usb_state == 0)) {
-#ifdef PLM_DEV_MODE
-	    printf("PLM (%lu): USB connected\n", HAL_GetTick());
-#endif
-        usb_state = 1;
-	    plm_sd_deinit();
-        fs_ready = 0;
-        uint64_t i = 0;
-        //__HAL_SD_DISABLE();
-        HAL_SD_DeInit(&hsd);
-        //MX_FATFS_DeInit();
-        osDelay(50);
-        HAL_GPIO_WritePin(USB_RESET_GPIO_Port, USB_RESET_Pin, 1);
-    }
+//	if (usb_connected && (usb_state == 0)) {
+//#ifdef PLM_DEV_MODE
+//	    printf("PLM (%lu): USB connected\n", HAL_GetTick());
+//#endif
+//        usb_state = 1;
+//	    plm_sd_deinit();
+//        fs_ready = 0;
+//        uint64_t i = 0;
+//        //__HAL_SD_DISABLE();
+//        HAL_SD_DeInit(&hsd);
+//        //MX_FATFS_DeInit();
+//        osDelay(50);
+//        HAL_GPIO_WritePin(USB_RESET_GPIO_Port, USB_RESET_Pin, 1);
+//    }
 
-    if (!usb_connected) {
-    	if (usb_state == 1) {
-    		HAL_SD_Init(&hsd);
-    	}
-    	usb_state = 0;
+    //if (!usb_connected) {
+//    	if (usb_state == 1) {
+//    		HAL_SD_Init(&hsd);
+//    	}
+//    	usb_state = 0;
+    	HAL_SD_Init(&hsd);
         if (!fs_ready) {
             // init FatFs and open the current data file
-             PLM_RES res = plm_sd_init();
+            PLM_RES res = plm_sd_init();
             if (res != PLM_OK) {
                 plm_sd_deinit();
                 plm_err_set(res);
@@ -280,7 +281,7 @@ void plm_store_data(void) {
                     }
                 } else SD_DB.tx_cplt = 1;
             }
-        }
+        //}
     }
 
     osDelay(PLM_TASK_DELAY_SD);
