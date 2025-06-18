@@ -20,7 +20,7 @@
 #define TRUST_VALUE_TIME_DELTA_ms 200
 
 #define COOLING_CONTROL TRUE
-#define COOLING_POWER_CH_ID 2 // 12V Channel B2
+#define COOLING_POWER_CH_ID 3 // 12V Channel B2
 
 typedef struct {
     FLOAT_CAN_STRUCT* parameter;
