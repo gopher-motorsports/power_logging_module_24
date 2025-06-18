@@ -305,7 +305,11 @@ PA13.Signal=SYS_JTMS-SWDIO
 PA14.Mode=Trace_Asynchronous_SW
 PA14.Signal=SYS_JTCK-SWCLK
 PA15.GPIOParameters=GPIO_PuPd,GPIO_Label
+<<<<<<< Updated upstream
 PA15.GPIO_Label=SD_SW_CD
+=======
+PA15.GPIO_Label=SDIO_CD
+>>>>>>> Stashed changes
 PA15.GPIO_PuPd=GPIO_PULLUP
 PA15.Locked=true
 PA15.Signal=GPIO_Input
@@ -339,7 +343,12 @@ PA9.Signal=USB_OTG_FS_VBUS
 PB0.GPIOParameters=GPIO_Label
 PB0.GPIO_Label=ADC_5V_0
 PB0.Signal=ADCx_IN8
+<<<<<<< Updated upstream
 PB1.Locked=true
+=======
+PB1.GPIOParameters=GPIO_PuPd
+PB1.GPIO_PuPd=GPIO_PULLUP
+>>>>>>> Stashed changes
 PB1.Mode=SD_4_bits_Wide_bus
 PB1.Signal=SDIO_D2
 PB10.Mode=I2C
@@ -358,6 +367,8 @@ PB15.GPIOParameters=GPIO_Label
 PB15.GPIO_Label=EN_12V_3
 PB15.Locked=true
 PB15.Signal=GPIO_Output
+PB2.GPIOParameters=GPIO_PuPd
+PB2.GPIO_PuPd=GPIO_NOPULL
 PB2.Mode=SD_4_bits_Wide_bus
 PB2.Signal=SDIO_CK
 PB3.Mode=Trace_Asynchronous_SW
@@ -388,7 +399,12 @@ PC1.GPIO_Label=ADC_5V_2
 PC1.Signal=ADCx_IN11
 PC10.Mode=Asynchronous
 PC10.Signal=UART4_TX
+<<<<<<< Updated upstream
 PC11.Locked=true
+=======
+PC11.GPIOParameters=GPIO_PuPd
+PC11.GPIO_PuPd=GPIO_PULLUP
+>>>>>>> Stashed changes
 PC11.Mode=SD_4_bits_Wide_bus
 PC11.Signal=SDIO_D3
 PC12.Mode=I2C
@@ -428,9 +444,29 @@ PC8.GPIOParameters=GPIO_PuPd
 PC8.GPIO_PuPd=GPIO_PULLUP
 PC8.Mode=SD_4_bits_Wide_bus
 PC8.Signal=SDIO_D0
+<<<<<<< Updated upstream
 PC9.Locked=true
 PC9.Mode=SD_4_bits_Wide_bus
 PC9.Signal=SDIO_D1
+=======
+PC9.GPIOParameters=GPIO_PuPd
+PC9.GPIO_PuPd=GPIO_PULLUP
+PC9.Mode=SD_4_bits_Wide_bus
+PC9.Signal=SDIO_D1
+PD0.Locked=true
+PD0.Mode=CAN_Activate
+PD0.Signal=CAN1_RX
+PD1.Mode=CAN_Activate
+PD1.Signal=CAN1_TX
+PD14.GPIOParameters=GPIO_Label
+PD14.GPIO_Label=LED_FAULT
+PD14.Locked=true
+PD14.Signal=GPIO_Output
+PD15.GPIOParameters=GPIO_Label
+PD15.GPIO_Label=LED0
+PD15.Locked=true
+PD15.Signal=GPIO_Output
+>>>>>>> Stashed changes
 PD2.GPIOParameters=GPIO_PuPd
 PD2.GPIO_PuPd=GPIO_PULLUP
 PD2.Mode=SD_4_bits_Wide_bus
