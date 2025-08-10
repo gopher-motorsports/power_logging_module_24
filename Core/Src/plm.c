@@ -94,8 +94,18 @@ void plm_init(void) {
 
     // enable all power channel switches
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
-        PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
-        HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+    	GPIO_PinState set_state;
+
+    	// Skip over cooling (fan) power channel pin if we're doing cooling control
+    	// because otherwise this will turn on the fan every time the car turns on
+    	if (COOLING_CONTROL && (i == COOLING_POWER_CH_ID)) {
+    		set_state = GPIO_PIN_RESET;
+    	} else {
+    		set_state = GPIO_PIN_SET;
+    	}
+
+		PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
+		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, set_state);
     }
 
     // we dont want to send parameters
@@ -227,34 +237,35 @@ void plm_store_data(void) {
     static uint8_t fs_ready = 0;
 
     // check if device is connected and ready to interact via USB
-    uint8_t usb_connected = 0;//HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
+   // uint8_t usb_connected = 0;//HAL_GPIO_ReadPin(HS_VBUS_SNS_GPIO_Port, HS_VBUS_SNS_Pin);
 
     // prevent USB access and FatFs interaction at the same time
     // USB callbacks are in USB_DEVICE/App/usbd_storage_if.c
     // uses the FatFs driver in FATFS/Target/sd_diskio.c
-	if (usb_connected && (usb_state == 0)) {
-#ifdef PLM_DEV_MODE
-	    printf("PLM (%lu): USB connected\n", HAL_GetTick());
-#endif
-        usb_state = 1;
-	    plm_sd_deinit();
-        fs_ready = 0;
-        uint64_t i = 0;
-        //__HAL_SD_DISABLE();
-        HAL_SD_DeInit(&hsd);
-        //MX_FATFS_DeInit();
-        osDelay(50);
-        HAL_GPIO_WritePin(USB_RESET_GPIO_Port, USB_RESET_Pin, 1);
-    }
+//	if (usb_connected && (usb_state == 0)) {
+//#ifdef PLM_DEV_MODE
+//	    printf("PLM (%lu): USB connected\n", HAL_GetTick());
+//#endif
+//        usb_state = 1;
+//	    plm_sd_deinit();
+//        fs_ready = 0;
+//        uint64_t i = 0;
+//        //__HAL_SD_DISABLE();
+//        HAL_SD_DeInit(&hsd);
+//        //MX_FATFS_DeInit();
+//        osDelay(50);
+//        HAL_GPIO_WritePin(USB_RESET_GPIO_Port, USB_RESET_Pin, 1);
+//    }
 
-    if (!usb_connected) {
-    	if (usb_state == 1) {
-    		HAL_SD_Init(&hsd);
-    	}
-    	usb_state = 0;
+    //if (!usb_connected) {
+//    	if (usb_state == 1) {
+//    		HAL_SD_Init(&hsd);
+//    	}
+//    	usb_state = 0;
+    	HAL_SD_Init(&hsd);
         if (!fs_ready) {
             // init FatFs and open the current data file
-             PLM_RES res = plm_sd_init();
+            PLM_RES res = plm_sd_init();
             if (res != PLM_OK) {
                 plm_sd_deinit();
                 plm_err_set(res);
@@ -280,7 +291,7 @@ void plm_store_data(void) {
                     }
                 } else SD_DB.tx_cplt = 1;
             }
-        }
+        //}
     }
 
     osDelay(PLM_TASK_DELAY_SD);
@@ -347,9 +358,6 @@ void plm_monitor_current(void) {
     osThreadTerminate(osThreadGetId());
 #endif
 
-#ifdef GO4_23c
-	//plm_cooling_control();
-#endif
     for (size_t i = 0; i < NUM_OF_CHANNELS; i++) {
         PLM_POWER_CHANNEL* channel = POWER_CHANNELS[i];
         plm_power_update_channel(channel);
@@ -375,9 +383,10 @@ void plm_monitor_current(void) {
             uint32_t ms_since_trip = HAL_GetTick() - channel->trip_time;
             if (ms_since_trip >= channel->reset_delay_ms && (channel->overcurrent_count < channel->max_overcurrent_count)) {
                 channel->ampsec_sum = 0;
-                //Channel turns on
-                HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-
+                if (i != COOLING_POWER_CH_ID) {
+                	// Physically enable channel if it's not the cooling channel, otherwise let cooling_control decide to enable instead
+                	HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+                }
                 channel->enabled = 1;
 //                GPIO_extension_overcurrent_LED(0);
             } else if (channel->overcurrent_count > channel->max_overcurrent_count) {
@@ -387,6 +396,9 @@ void plm_monitor_current(void) {
 				GPIO_extension_overcurrent_LED(1);
 
             }
+        } else if ((i == COOLING_POWER_CH_ID) && channel->enabled) {
+        	// If there's no overcurrent/re-enable events and the channel is allowed to be enabled, turn/on off cooling (fan) channel
+        	plm_cooling_control();
         }
     }
 

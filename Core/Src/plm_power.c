@@ -288,8 +288,15 @@ void plm_power_update_channel(PLM_POWER_CHANNEL* channel) {
     if (channel->ampsec_sum <= 0) channel->ampsec_sum = 0;
 }
 
-//void plm_cooling_control(void) {
-//    // code to turn off the fans if the wheel speed goes above a threshold
+void plm_cooling_control(void) {
+	PLM_POWER_CHANNEL* channel = POWER_CHANNELS[COOLING_POWER_CH_ID];
+	if(coolantFanPower_percent.data >= 100) {
+		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
+	}
+
+//    // 2023 code to turn off the fans if the wheel speed goes above a threshold
 //    if (HAL_GetTick() - wheelSpeedFrontLeft_mph.info.last_rx <= TRUST_VALUE_TIME_DELTA_ms &&
 //        HAL_GetTick() - wheelSpeedFrontLeft_mph.info.last_rx <= TRUST_VALUE_TIME_DELTA_ms &&
 //        wheelSpeedFrontLeft_mph.data >= WHEEL_SPEED_FAN_OFF_THRESH_mph &&
@@ -308,4 +315,4 @@ void plm_power_update_channel(PLM_POWER_CHANNEL* channel) {
 //            HAL_GPIO_WritePin(EN_12V_0_GPIO_Port, EN_12V_0_Pin, GPIO_PIN_SET);
 //        }
 //    }
-//}
+}
