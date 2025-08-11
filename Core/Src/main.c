@@ -1033,6 +1033,7 @@ void plm_task_heartbeat(void const * argument)
   for(;;)
   {
 	  plm_heartbeat();
+    plm_sdc_sense();
   }
   /* USER CODE END plm_task_heartbeat */
 }
