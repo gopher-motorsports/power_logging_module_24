@@ -412,16 +412,16 @@ void plm_sdc_sense(void) {
     // check status of each SDC pin
     // if the pin is low, SDC status is good -> do nothing
     // if the pin is high, SDC status is bad -> act accordingly
-    sdcStatus5.data = HAL_GPIO_ReadPin(SDC_MCU_1_GPIO_Port,SDC_MCU_1_Pin);
-    sdcStatus6.data = HAL_GPIO_ReadPin(SDC_MCU_2_GPIO_Port,SDC_MCU_2_Pin);
-    sdcStatus7.data = HAL_GPIO_ReadPin(SDC_MCU_3_GPIO_Port,SDC_MCU_3_Pin);
+    // sdcStatus5.data = HAL_GPIO_ReadPin(SDC_MCU_1_GPIO_Port,SDC_MCU_1_Pin);
+    // sdcStatus6.data = HAL_GPIO_ReadPin(SDC_MCU_2_GPIO_Port,SDC_MCU_2_Pin);
+    // sdcStatus7.data = HAL_GPIO_ReadPin(SDC_MCU_3_GPIO_Port,SDC_MCU_3_Pin);
 
-    static uint32_t lastUpdate = 0;
-    if((HAL_GetTick() - lastUpdate >= 1000)) 
-    {
-      lastUpdate = HAL_GetTick();
-      send_group(sdcStatus5.info.GROUP_ID);
-    }
+    // static uint32_t lastUpdate = 0;
+    // if((HAL_GetTick() - lastUpdate >= 1000)) 
+    // {
+    //   lastUpdate = HAL_GetTick();
+    //   send_group(sdcStatus5.info.GROUP_ID);
+    // }
 
     // calling this didn't work, not sure how plm does gcan
     // update_and_queue_param_u8(&sdcStatus5,statSDC5);

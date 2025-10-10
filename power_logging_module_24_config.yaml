@@ -164,18 +164,18 @@ buckets:
                 ADC: NON_ADC
                 sensor: NON_ADC
                 samples_buffered: 10
-            sdcStatus5:
-                ADC: NON_ADC
-                sensor: NON_ADC
-                samples_buffered: 1
-            sdcStatus6:
-                ADC: NON_ADC
-                sensor: NON_ADC
-                samples_buffered: 1
-            sdcStatus7:
-                ADC: NON_ADC
-                sensor: NON_ADC
-                samples_buffered: 1
+            # sdcStatus5:
+            #     ADC: NON_ADC
+            #     sensor: NON_ADC
+            #     samples_buffered: 1
+            # sdcStatus6:
+            #     ADC: NON_ADC
+            #     sensor: NON_ADC
+            #     samples_buffered: 1
+            # sdcStatus7:
+            #     ADC: NON_ADC
+            #     sensor: NON_ADC
+            #     samples_buffered: 1
 
 # TODO
 # Channel overcurrent events for every channel and num times overcurrented
