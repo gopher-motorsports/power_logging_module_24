@@ -21,6 +21,7 @@
 
 #define COOLING_CONTROL TRUE
 #define COOLING_POWER_CH_ID 3 // 12V Channel B2
+#define WATER_PUMP_CH_ID 1 // 12V Channel B0
 
 typedef struct {
     FLOAT_CAN_STRUCT* parameter;
