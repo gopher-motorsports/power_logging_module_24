@@ -290,13 +290,10 @@ void plm_power_update_channel(PLM_POWER_CHANNEL* channel) {
 
 void plm_cooling_control(void) {
 	PLM_POWER_CHANNEL* channel = POWER_CHANNELS[COOLING_POWER_CH_ID];
-	PLM_POWER_CHANNEL* pumpChannel = POWER_CHANNELS[WATER_PUMP_CH_ID];
-	if((swButon1_state.data == 1) || (coolantFanPower_percent.data >= 100)) {
+	if(coolantFanPower_percent.data >= 100) {
 		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(pumpChannel->enable_switch_port, pumpChannel->enable_switch_pin, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(channel->enable_switch_port, channel->enable_switch_pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(pumpChannel->enable_switch_port, pumpChannel->enable_switch_pin, GPIO_PIN_RESET);
 	}
 
 //    // 2023 code to turn off the fans if the wheel speed goes above a threshold
